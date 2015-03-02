@@ -11,7 +11,17 @@
     <modules>
         <module>client</module>
         <module>server</module>
+        <module>model</module>
+        <module>common</module>
     </modules>
 
-
+    <properties>
+        <jdk.version>1.7</jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <junit.version>4.10</junit.version>
+        <java.version>1.7</java.version>
+        <sl4j.version>1.6.1</sl4j.version>
+        <log4j.version>1.2.16</log4j.version>
+    </properties>
 </project>
