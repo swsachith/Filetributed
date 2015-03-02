@@ -28,4 +28,17 @@ public class FileTable {
         entries.remove(oldEntry);
     }
 
+    public List<FileTableEntry> searchTable(String filename) {
+        List<FileTableEntry> results = new LinkedList<FileTableEntry>();
+        for (Iterator<FileTableEntry> iterator = entries.iterator(); iterator.hasNext(); ) {
+            FileTableEntry entry = iterator.next();
+            if (entry.getFilename().toLowerCase().matches("(.*)"+filename.toLowerCase()+"(.*)")) {
+                results.add(entry);
+            }
+        }
+        if(results.size() <1 )
+            return null;
+        else
+            return results;
+    }
 }

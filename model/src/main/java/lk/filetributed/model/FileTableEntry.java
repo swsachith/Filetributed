@@ -4,6 +4,21 @@ public class FileTableEntry {
 
     private String filename;
     private String ipAddress;
+    private int port;
+
+    public FileTableEntry(String filename, String ipAddress, int port) {
+        this.filename = filename;
+        this.ipAddress = ipAddress;
+        this.port = port;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     public String getFilename() {
         return filename;
@@ -28,6 +43,7 @@ public class FileTableEntry {
 
         FileTableEntry that = (FileTableEntry) o;
 
+        if (port != that.port) return false;
         if (!filename.equals(that.filename)) return false;
         if (!ipAddress.equals(that.ipAddress)) return false;
 
@@ -38,11 +54,12 @@ public class FileTableEntry {
     public int hashCode() {
         int result = filename.hashCode();
         result = 31 * result + ipAddress.hashCode();
+        result = 31 * result + port;
         return result;
     }
 
     @Override
     public String toString() {
-        return filename + ' ' + ipAddress;
+        return filename + ' ' + ipAddress+' '+port;
     }
 }
