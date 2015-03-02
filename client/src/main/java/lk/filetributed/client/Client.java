@@ -9,7 +9,7 @@ import lk.filetributed.model.Node;
 import org.apache.log4j.Logger;
 
 
-public class Client {
+public class Client extends Node{
 
     private static Logger logger = Logger.getLogger(Client.class);
 
@@ -22,13 +22,9 @@ public class Client {
     private static final int NO_CLUSTERS = 3;
 
     private Node currentNode;
-    private IPTable ipTable;
-    private FileTable fileTable;
 
     public Client() {
-        this.currentNode = new Node(CLIENT_IP, PORT, NO_CLUSTERS);
-        this.ipTable = new IPTable();
-        this.fileTable = new FileTable();
+        super(CLIENT_IP, PORT, NO_CLUSTERS);
     }
 
     public void initialize() {

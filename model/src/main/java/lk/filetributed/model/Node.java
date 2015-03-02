@@ -7,13 +7,36 @@ public class Node {
     private int port;
     private String username;
     private String clusterID;
-
+    private IPTable ipTable;
+    private FileTable fileTable;
 
     public Node(String ipAddress, int port,int clusters) {
         this.ipAddress = ipAddress;
         this.port = port;
         NO_CLUSTERS = clusters;
+        this.ipTable = new IPTable();
+        this.fileTable = new FileTable();
         setCluster();
+    }
+
+    public void setClusterID(String clusterID) {
+        this.clusterID = clusterID;
+    }
+
+    public IPTable getIpTable() {
+        return ipTable;
+    }
+
+    public void setIpTable(IPTable ipTable) {
+        this.ipTable = ipTable;
+    }
+
+    public FileTable getFileTable() {
+        return fileTable;
+    }
+
+    public void setFileTable(FileTable fileTable) {
+        this.fileTable = fileTable;
     }
 
     public String getIpAddress() {

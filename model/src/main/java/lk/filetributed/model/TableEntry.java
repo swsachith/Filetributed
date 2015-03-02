@@ -57,6 +57,6 @@ public class TableEntry {
 
     @Override
     public String toString() {
-        return ipAddress + ' ' + port + ' ' + clusterID;
+        return ipAddress + ":" + port + ":" + clusterID;
     }
 }
