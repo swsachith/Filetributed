@@ -24,4 +24,12 @@
         <sl4j.version>1.6.1</sl4j.version>
         <log4j.version>1.2.16</log4j.version>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
