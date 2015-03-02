@@ -4,12 +4,12 @@ public class Node {
 
     private final int NO_CLUSTERS;
     private String ipAddress;
-    private String port;
+    private int port;
     private String username;
     private String clusterID;
 
 
-    public Node(String ipAddress, String port,int clusters) {
+    public Node(String ipAddress, int port,int clusters) {
         this.ipAddress = ipAddress;
         this.port = port;
         NO_CLUSTERS = clusters;
@@ -24,11 +24,11 @@ public class Node {
         this.ipAddress = ipAddress;
     }
 
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(String port) {
+    public void setPort(int port) {
         this.port = port;
     }
 
@@ -57,8 +57,8 @@ public class Node {
 
         Node node = (Node) o;
 
+        if (port != node.port) return false;
         if (!ipAddress.equals(node.ipAddress)) return false;
-        if (!port.equals(node.port)) return false;
 
         return true;
     }
@@ -66,9 +66,7 @@ public class Node {
     @Override
     public int hashCode() {
         int result = ipAddress.hashCode();
-        result = 31 * result + port.hashCode();
+        result = 31 * result + port;
         return result;
     }
-
-
 }
