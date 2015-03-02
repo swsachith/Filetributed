@@ -2,7 +2,7 @@ package lk.filetributed.model.protocols;
 
 public class JoinProtocol {
 
-    public static String getJoinMessage(String ipaddress, String port) {
+    public static String getJoinMessage(String ipaddress, int port) {
         return "JOIN " + ipaddress + " " + port;
     }
 
