@@ -3,6 +3,8 @@ package lk.filetributed.client;
 import java.net.*;
 import java.io.*;
 
+import lk.filetributed.model.FileTable;
+import lk.filetributed.model.IPTable;
 import lk.filetributed.model.Node;
 import org.apache.log4j.Logger;
 
@@ -20,39 +22,18 @@ public class Client {
     private static final int NO_CLUSTERS = 3;
 
     private Node currentNode;
-
-    private static String REGISTER_MSG = "REG " + CLIENT_IP + " " + CLIENT_PORT + " " + USERNAME;
+    private IPTable ipTable;
+    private FileTable fileTable;
 
     public Client() {
         this.currentNode = new Node(CLIENT_IP, PORT, NO_CLUSTERS);
-    }
-    public static void main(String[] args) {
-
-        connectToBootstrap();
+        this.ipTable = new IPTable();
+        this.fileTable = new FileTable();
     }
 
-    private static void connectToBootstrap() {
-        try {
-            int size = REGISTER_MSG.length() + 5;
-            REGISTER_MSG = "00" + size + " " + REGISTER_MSG;
-            System.out.println("MESSAGE: " + REGISTER_MSG);
-
-            logger.info("Connecting to " + SERVER_NAME
-                    + " on port " + PORT);
-            Socket client = new Socket(SERVER_NAME, PORT);
-            logger.info("Just connected to "
-                    + client.getRemoteSocketAddress());
-
-            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-            out.println(REGISTER_MSG);
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(client.getInputStream()));
-            logger.info(in.readLine());
-
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void initialize() {
+        String result = BootstrapConnector.connectToBootstrap(SERVER_NAME, PORT, CLIENT_IP, CLIENT_PORT, USERNAME);
     }
+
+
 }
