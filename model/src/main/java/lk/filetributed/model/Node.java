@@ -1,5 +1,7 @@
 package lk.filetributed.model;
 
+import lk.filetributed.util.Utils;
+
 public class Node {
 
     private final int NO_CLUSTERS;
@@ -8,7 +10,7 @@ public class Node {
     private String username;
     private String clusterID;
     private IPTable ipTable;
-    private FileTable fileTable;
+    protected FileTable fileTable;
 
     public Node(String ipAddress, int port,int clusters) {
         this.ipAddress = ipAddress;
@@ -69,8 +71,7 @@ public class Node {
 
     public void setCluster() {
 
-        int hashCode = hashCode();
-        clusterID = String.valueOf(hashCode % NO_CLUSTERS);
+        clusterID = String.valueOf(Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS));
     }
 
     @Override
