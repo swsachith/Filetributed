@@ -22,7 +22,7 @@ public class UtilsTester {
     @Test
     public void testEncryptData() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         int clusterID = Utils.getClusterID("127.0.0.1", 3343, 3);
-        Assert.assertNotNull(clusterID);
+        Assert.assertEquals(2,clusterID);
         logger.info(clusterID);
 
     }
