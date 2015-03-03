@@ -10,6 +10,13 @@ import java.net.*;
 public class ClientTester {
     private static Logger logger = Logger.getLogger(ClientTester.class);
 
+    private Client client;
+
+    @Before
+    public void setup() {
+        client = new Client();
+    }
+
     @Test
     public void testUDPServer() throws IOException {
 
@@ -29,5 +36,10 @@ public class ClientTester {
         String modifiedSentence = new String(receivePacket.getData());
         logger.info("FROM SERVER:" + modifiedSentence);
         clientSocket.close();
+    }
+
+    @Test
+    public void testProcess() throws IOException {
+        String server_response = "0051 REGOK 1 129.82.123.45 5001";
     }
 }
