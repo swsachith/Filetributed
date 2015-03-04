@@ -1,16 +1,19 @@
 package lk.filetributed.client;
 
 import lk.filetributed.model.FileTableEntry;
-import lk.filetributed.model.IPTable;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
 import lk.filetributed.model.protocols.JoinProtocol;
+import lk.filetributed.model.protocols.JoinStatus;
 import lk.filetributed.model.protocols.MessageProtocolType;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -141,6 +144,26 @@ public class Client extends Node{
                 break;
         }
     }
+
+    public String process_JOIN_RESP(String RECIEVED_IP, int RECIEVED_PORT){
+        String response_MSG="";
+
+        try {
+            this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP,
+                    RECIEVED_PORT + "", Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS) + ""));
+            response_MSG = JoinProtocol.getJoinResponse(JoinStatus.SUCCESS);
+        }
+        catch(Exception ex){
+            logger.error("Error in adding entry to the ip table");
+            response_MSG = JoinProtocol.getJoinResponse(JoinStatus.FAILED);
+        }
+        finally {
+            return response_MSG;
+        }
+
+    }
+
+
     public void process(){
 
     }
@@ -162,6 +185,12 @@ public class Client extends Node{
 
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
+
+        String sentence = new String( receivePacket.getData());
+        logger.info("RECEIVED: " + sentence);
+        if (sentence.split(" ")[2].equals("0")){
+
+        }
 
         /*TableEntry tableEntry = new TableEntry(node01.getIpAddress(),node01.getPort()+"",node01.getClusterID());
 
