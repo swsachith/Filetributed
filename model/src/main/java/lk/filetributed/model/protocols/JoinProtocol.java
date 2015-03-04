@@ -27,6 +27,7 @@ public class JoinProtocol implements MessageProtocol{
         return length+" "+msg;
     }
 
+
     @Override
     public MessageProtocol resolveMessage(String message) {
         return null;

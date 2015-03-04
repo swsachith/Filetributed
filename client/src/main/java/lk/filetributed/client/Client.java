@@ -17,12 +17,12 @@ public class Client extends Node{
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "192.168.43.77";
+    private static final String SERVER_NAME = "127.0.0.1";
     private static final int PORT = 9889;
 
-    private static final String CLIENT_IP = "192.168.43.208";
-    private static final int CLIENT_PORT = 9888;
-    private static final String USERNAME = "adas";
+    private static final String CLIENT_IP = "127.0.0.1";
+    private static final int CLIENT_PORT = 9887;
+    private static final String USERNAME = "sachith";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -81,6 +81,7 @@ public class Client extends Node{
         String[] response_data = server_response.split(" ");
         if (!response_data[1].equals("REGOK")) {
             System.err.println("Registration Failed. Try Again!");
+            //FIXME : Come up with a better way to handle this?
             System.exit(0);
         }
 
@@ -118,7 +119,7 @@ public class Client extends Node{
         int clusterID;
 
         clusterID = Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
-        Node node = new Node(RECIEVED_IP,RECIEVED_PORT,clusterID);
+        Node node = new Node(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS);
         String JOIN_MSG = JoinProtocol.getJoinMessage(CLIENT_IP,CLIENT_PORT);
 
         DatagramSocket clientSocket = new DatagramSocket();

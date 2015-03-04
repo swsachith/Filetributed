@@ -17,9 +17,9 @@ public class BootstrapConnector {
         try {
             String REGISTER_MSG = "REG " + CLIENT_IP + " " + CLIENT_PORT + " " + USERNAME;
 
-            int size = REGISTER_MSG.length() + 5;
-            REGISTER_MSG = "00" + size + " " + REGISTER_MSG;
-            System.out.println("MESSAGE: " + REGISTER_MSG);
+            //setting the length
+            String length = String.format("%04d", REGISTER_MSG.length()+5);
+            REGISTER_MSG = length + " " + REGISTER_MSG;
 
             logger.info("Connecting to " + SERVER_NAME
                     + " on port " + PORT);
@@ -28,7 +28,8 @@ public class BootstrapConnector {
                     + client.getRemoteSocketAddress());
 
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-            out.println(REGISTER_MSG);
+            out.print(REGISTER_MSG);
+            out.flush();
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(client.getInputStream()));
