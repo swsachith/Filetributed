@@ -40,6 +40,7 @@ public class UDPServer extends Thread {
             try {
                 serverSocket.receive(receivePacket);
                 String recv_message = new String( receivePacket.getData());
+                recv_message=recv_message.trim();
                 logger.info("RECEIVED: " + recv_message);
 
                 messageResolver(recv_message);
