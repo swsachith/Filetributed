@@ -1,12 +1,13 @@
 package lk.filetributed.client;
 
 import lk.filetributed.dispatcher.MessageBuffer;
+import lk.filetributed.dispatcher.MessageDispatcher;
+import lk.filetributed.dispatcher.MessageOutBuffer;
+import lk.filetributed.model.DispatchMessage;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
-import lk.filetributed.model.protocols.JoinProtocol;
-import lk.filetributed.model.protocols.JoinStatus;
-import lk.filetributed.model.protocols.MessageProtocolType;
+import lk.filetributed.model.protocols.*;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -34,13 +35,18 @@ public class Client extends Node{
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
 
     private MessageBuffer messageBuffer;
+    private MessageOutBuffer outBuffer;
+
     public Client() {
         super(CLIENT_IP, PORT, NO_CLUSTERS);
         messageBuffer = MessageBuffer.getInstance();
+        outBuffer = MessageOutBuffer.getInstance();
 
         initialize();
-        Thread thread = new Thread(new UDPServer(CLIENT_PORT));
-        thread.start();
+        Thread t_udpServer = new Thread(new UDPServer(CLIENT_PORT));
+        Thread t_messageDispatcher = new Thread(new MessageDispatcher());
+        t_udpServer.start();
+        t_messageDispatcher.start();
     }
 
     //connect with the system
@@ -157,6 +163,30 @@ public class Client extends Node{
         int clusterID01;
         int clusterID02;
     }
+
+    public void processBuffer() {
+        MessageProtocol message = messageBuffer.getMessage();
+
+        switch (MessageProtocolType.valueOf(message.getMessageType())) {
+            case JOIN:
+                String msg;
+                IPTableProtocol ipMessage = new IPTableProtocol();
+                if(message instanceof JoinProtocol){
+                    msg = message.toString();
+                }
+                else{
+                    msg=null;
+                }
+                ipMessage.initialize(msg);
+                outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
+                break;
+            case IPTABLE:
+                break;
+            default:
+                break;
+        }
+    }
+
 
 
 }

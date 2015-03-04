@@ -40,7 +40,7 @@ public class IPTable {
         for (Iterator<TableEntry> iterator = entries.iterator(); iterator.hasNext();){
             entrylist += iterator.next().toString()+" ";
         }
-        return entrylist;
+        return "#"+entrylist;
     }
 
     public void setEntries(String entrylist, int clusterID) {
