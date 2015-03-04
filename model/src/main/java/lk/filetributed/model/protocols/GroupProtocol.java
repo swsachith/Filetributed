@@ -69,4 +69,14 @@ public class GroupProtocol extends MessageProtocol{
         this.clusterID = clusterID;
     }
 
+    @Override
+    public String getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public String getMessageID() {
+        return messageID;
+    }
+
 }

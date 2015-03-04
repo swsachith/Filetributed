@@ -37,6 +37,7 @@ public class IPTableProtocol extends MessageProtocol {
                 getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
             }
         }
+        this.messageType="IPTABLE";
     }
 
     public void getIPTableResponse(String msg) {
@@ -55,11 +56,22 @@ public class IPTableProtocol extends MessageProtocol {
 
     @Override
     public void initialize(String message) {
+        this.messageType="IPTABLE";
         String[] tokenz = message.split(" ");
         this.messageID = tokenz[2];
         this.ipAddress = tokenz[3];
         this.port = Integer.parseInt(tokenz[4]);
         this.clusterID = Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS);
+        if(this.clusterID == getClusterID()) {
+            this.ipTable = getIpTable();
+            this.entries = ipTable.convertToString();
+        }
+        else{
+            this.entries = null;
+            if(getIpTable().searchClusterID(this.clusterID+"")){
+                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
+            }
+        }
     }
 
     public IPTable getIpTable() {
@@ -102,6 +114,12 @@ public class IPTableProtocol extends MessageProtocol {
         this.entries = entries;
     }
 
+    @Override
+    public String getMessageType() {
+        return messageType;
+    }
+
+    @Override
     public String getMessageID() {
         return messageID;
     }

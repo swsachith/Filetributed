@@ -9,16 +9,8 @@ public abstract class MessageProtocol {
 
     public abstract void initialize(String message);
 
-    public String getMessageType() {
-        return messageType;
-    }
+    public abstract String getMessageType();
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
-    public String getMessageID() {
-        return messageID;
-    }
+    public abstract String getMessageID();
 
 }
