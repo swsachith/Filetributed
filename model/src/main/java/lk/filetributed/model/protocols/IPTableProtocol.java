@@ -25,13 +25,23 @@ public class IPTableProtocol extends MessageProtocol {
     public IPTableProtocol(String ipAddress, int port, int clusterID, IPTable ipTable) {
         this.ipAddress = ipAddress;
         this.port = port;
-        this.clusterID = clusterID;
+        this.clusterID = Utils.getClusterID(ipAddress, port, NO_CLUSTERS);
         this.ipTable = ipTable;
+        if(this.clusterID == clusterID) {
+            this.ipTable = ipTable;
+            this.entries = ipTable.convertToString();
+        }
+        else{
+            this.entries = null;
+            if(getIpTable().searchClusterID(this.clusterID+"")){
+                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
+            }
+        }
     }
 
     public void getIPTableResponse(String msg) {
         String[] recievedMessage = msg.split("#");
-        getIpTable().setEntries(recievedMessage[1],
+        this.ipTable.setEntries(recievedMessage[1],
                 Utils.getClusterID(recievedMessage[0].split(" ")[2], Integer.parseInt(recievedMessage[0].split(" ")[3]), NO_CLUSTERS));
 
     }
@@ -50,16 +60,6 @@ public class IPTableProtocol extends MessageProtocol {
         this.ipAddress = tokenz[3];
         this.port = Integer.parseInt(tokenz[4]);
         this.clusterID = Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS);
-        if(this.clusterID == getClusterID()) {
-            this.ipTable = getIpTable();
-            this.entries = ipTable.convertToString();
-        }
-        else{
-            this.entries = null;
-            if(getIpTable().searchClusterID(this.clusterID+"")){
-                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
-            }
-        }
     }
 
     public IPTable getIpTable() {
