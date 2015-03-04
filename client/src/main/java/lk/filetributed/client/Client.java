@@ -27,8 +27,8 @@ public class Client extends Node{
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9886;
-    private static final String USERNAME = "666ith";
+    private static final int CLIENT_PORT = 9888;
+    private static final String USERNAME = "sacadas";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -90,7 +90,7 @@ public class Client extends Node{
                 process(response_data[3], Integer.parseInt(response_data[4]));
                 break;
             case 2:
-                process(response_data[3], Integer.parseInt(response_data[4]), response_data[5], Integer.parseInt(response_data[6]));
+                process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
                 break;
             case 9999:
                 System.out.println("failed, there is some error in the command");
@@ -143,10 +143,10 @@ public class Client extends Node{
         sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
 
 
-        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
-        String fileTableMSG = fileTableProtocol.toString();
-
-        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
+//        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
+//        String fileTableMSG = fileTableProtocol.toString();
+//
+//        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
 
 
 
@@ -186,8 +186,8 @@ public class Client extends Node{
                             Integer.parseInt(this.getClusterID()), this.getIpTable());
 
                     outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
-                    logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
-                            ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
+                    //logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
+                    //        ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
                 }
                 else{
                     msg=null;

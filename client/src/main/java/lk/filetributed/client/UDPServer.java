@@ -37,10 +37,10 @@ public class UDPServer extends Thread {
 
     public void runUDPServer() throws SocketException {
         DatagramSocket serverSocket = new DatagramSocket(server_port);
-        byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
         while(true)
         {
+            byte[] receiveData = new byte[2048];
+            byte[] sendData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
                 serverSocket.receive(receivePacket);
