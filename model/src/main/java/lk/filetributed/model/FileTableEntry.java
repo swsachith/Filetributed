@@ -60,6 +60,6 @@ public class FileTableEntry {
 
     @Override
     public String toString() {
-        return filename + ' ' + ipAddress+' '+port;
+        return filename + ':' + ipAddress+':'+port;
     }
 }
