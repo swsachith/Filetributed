@@ -1,6 +1,7 @@
 package lk.filetributed.client;
 
 import lk.filetributed.dispatcher.MessageBuffer;
+import lk.filetributed.model.protocols.IPTableProtocol;
 import lk.filetributed.model.protocols.JoinProtocol;
 import lk.filetributed.model.protocols.MessageProtocolType;
 import org.apache.log4j.Logger;
@@ -73,6 +74,7 @@ public class UDPServer extends Thread {
             case GROUP:
                 break;
             case IPTABLE:
+                logger.info(message);
                 break;
             case FILETABLE:
                 break;
