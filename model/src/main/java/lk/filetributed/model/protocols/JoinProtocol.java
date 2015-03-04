@@ -16,6 +16,7 @@ public class JoinProtocol extends MessageProtocol{
         this.messageType = "JOIN";
         this.ipAddress = ipAddress;
         this.port = port;
+        this.messageID = Utils.getMessageID();
     }
 
     public static String getJoinResponse(JoinStatus status) {

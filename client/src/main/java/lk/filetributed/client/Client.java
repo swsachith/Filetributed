@@ -1,5 +1,6 @@
 package lk.filetributed.client;
 
+import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
@@ -32,8 +33,11 @@ public class Client extends Node{
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
 
+    private MessageBuffer messageBuffer;
     public Client() {
         super(CLIENT_IP, PORT, NO_CLUSTERS);
+        messageBuffer = MessageBuffer.getInstance();
+
         initialize();
         try {
             runUDPServer();
@@ -42,6 +46,7 @@ public class Client extends Node{
         }
     }
 
+    //connect with the system
     public void initialize() {
         String result = BootstrapConnector.connectToBootstrap(SERVER_NAME, PORT, CLIENT_IP, CLIENT_PORT, USERNAME);
         try {
@@ -66,6 +71,7 @@ public class Client extends Node{
                 String recv_message = new String( receivePacket.getData());
                 logger.info("RECEIVED: " + recv_message);
 
+                messageResolver(recv_message);
 
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
@@ -97,6 +103,7 @@ public class Client extends Node{
             case JOIN:
                 JoinProtocol joinMessage = new JoinProtocol();
                 joinMessage.initialize(message);
+                messageBuffer.add(joinMessage);
                 process_JoinMessage(joinMessage);
                 break;
             case GROUP:
