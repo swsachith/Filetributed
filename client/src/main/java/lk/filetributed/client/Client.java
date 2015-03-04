@@ -24,7 +24,7 @@ public class Client extends Node{
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "127.0.0.1";
+    private static final String SERVER_NAME = "192.168.43.77";
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
@@ -178,7 +178,9 @@ public class Client extends Node{
                     msg=null;
                 }
                 ipMessage.initialize(msg);
+
                 outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
+
                 break;
             case IPTABLE:
                 break;
