@@ -47,11 +47,11 @@ public class UDPServer extends Thread {
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
 
-                String capitalizedSentence = recv_message.toUpperCase();
-                sendData = capitalizedSentence.getBytes();
-                DatagramPacket sendPacket =
-                        new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                serverSocket.send(sendPacket);
+//                String capitalizedSentence = recv_message.toUpperCase();
+//                sendData = capitalizedSentence.getBytes();
+//                DatagramPacket sendPacket =
+//                        new DatagramPacket(sendData, sendData.length, IPAddress, port);
+//                serverSocket.send(sendPacket);
             } catch (IOException e) {
                 logger.error("Error receiving the UDP packet ..."+e.getStackTrace());
             }
