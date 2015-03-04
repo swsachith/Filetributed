@@ -18,10 +18,11 @@ public class FileTableProtocol extends MessageProtocol {
     }
 
     public FileTableProtocol(String ipAddress, int port, FileTable table) {
-        this.messageType = "FileTable";
+        this.messageType = "FILETABLE";
         this.ipAddress = ipAddress;
         this.port = port;
         this.table=table;
+        this.messageID=Utils.getMessageID();
     }
     @Override
     public String toString() {
