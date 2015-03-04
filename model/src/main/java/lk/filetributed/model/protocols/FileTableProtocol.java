@@ -4,9 +4,6 @@ import lk.filetributed.model.FileTable;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.util.Utils;
 
-/**
- * Created by sudheera on 3/4/15.
- */
 public class FileTableProtocol extends MessageProtocol {
 
     private String ipAddress;
@@ -33,17 +30,17 @@ public class FileTableProtocol extends MessageProtocol {
 
     @Override
     public void initialize(String message) {
+        table=new FileTable();
         this.messageType = "FILETABLE";
         String[] receivedMessage = message.split(" ");
         this.messageID = receivedMessage[2];
         this.ipAddress = receivedMessage[3];
         this.port = Integer.parseInt(receivedMessage[4]);
-        String tableString = receivedMessage[5];
         this.clusterID = Utils.getClusterID(ipAddress, port, NO_CLUSTERS);
 
-        String[] tableEntryString = tableString.split(";");
-        int count = Integer.parseInt(tableEntryString[0]);
-        for (int i = 1; i <= count; i++) {
+        String[] tableEntryString = message.split(";");
+        int count = Integer.parseInt(tableEntryString[1]);
+        for (int i = 2; i <= count+1; i++) {
             String[] entry = tableEntryString[i].split(":");
             table.addTableEntry(new FileTableEntry(entry[0],entry[1],Integer.parseInt(entry[2])));
         }
