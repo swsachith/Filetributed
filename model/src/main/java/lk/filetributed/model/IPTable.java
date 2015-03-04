@@ -43,13 +43,13 @@ public class IPTable {
         return entrylist;
     }
 
-    public void setEntries(String entrylist, String clusterID) {
+    public void setEntries(String entrylist, int clusterID) {
         String[] entries = entrylist.trim().split(" ");
         TableEntry newEntry;
         String[] data;
         for(String entry: entries){
             data = entry.split(":");
-            if(data[2] == clusterID){
+            if(Integer.parseInt(data[2]) == clusterID ){
                 newEntry = new TableEntry(entry.split(":")[0],entry.split(":")[1],entry.split(":")[2]);
                 addTableEntry(newEntry);
             }
