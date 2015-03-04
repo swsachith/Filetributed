@@ -25,7 +25,7 @@ public class GroupFindProtocol implements MessageProtocol{
     }
 
     @Override
-    public MessageProtocol resolveMessage(String message) {
+    public MessageProtocol initialize(String message) {
         StringTokenizer tokenizer = new StringTokenizer(message);
 
         //disregard the length and the message type

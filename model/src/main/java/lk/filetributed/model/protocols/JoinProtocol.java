@@ -29,7 +29,15 @@ public class JoinProtocol implements MessageProtocol{
 
 
     @Override
-    public MessageProtocol resolveMessage(String message) {
+    public MessageProtocol initialize(String message) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "JoinProtocol{" +
+                "ipAddress='" + ipAddress + '\'' +
+                ", port=" + port +
+                '}';
     }
 }
