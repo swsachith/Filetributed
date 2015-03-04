@@ -27,8 +27,8 @@ public class Client extends Node{
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9886;
-    private static final String USERNAME = "withana";
+    private static final int CLIENT_PORT = 9887;
+    private static final String USERNAME = "sachith";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -39,11 +39,8 @@ public class Client extends Node{
         messageBuffer = MessageBuffer.getInstance();
 
         initialize();
-        try {
-            runUDPServer();
-        } catch (SocketException e) {
-            logger.error("Error creating the datagram socket ... "+e.getStackTrace());
-        }
+        Thread thread = new Thread(new UDPServer(CLIENT_PORT));
+        thread.start();
     }
 
     //connect with the system
@@ -59,64 +56,10 @@ public class Client extends Node{
         return this.fileTable.searchTable(filename);
     }
 
-    public void runUDPServer() throws SocketException {
-        DatagramSocket serverSocket = new DatagramSocket(CLIENT_PORT);
-        byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
-        while(true)
-        {
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            try {
-                serverSocket.receive(receivePacket);
-                String recv_message = new String( receivePacket.getData());
-                logger.info("RECEIVED: " + recv_message);
-
-                messageResolver(recv_message);
-
-                InetAddress IPAddress = receivePacket.getAddress();
-                int port = receivePacket.getPort();
-
-                String capitalizedSentence = recv_message.toUpperCase();
-                sendData = capitalizedSentence.getBytes();
-                DatagramPacket sendPacket =
-                        new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                serverSocket.send(sendPacket);
-            } catch (IOException e) {
-                logger.error("Error receiving the UDP packet ..."+e.getStackTrace());
-            }
-
-        }
-    }
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         Client client = new Client();
     }
 
-    /**
-     * resolves the UDP messages this get
-     * @param message
-     */
-    private void messageResolver(String message) {
-        //expected message type <length MessageType MessageID Payload>
-        String[] receivedMessage = message.split(" ");
-
-        switch (MessageProtocolType.valueOf(receivedMessage[1])) {
-            case JOIN:
-                JoinProtocol joinMessage = new JoinProtocol();
-                joinMessage.initialize(message);
-                messageBuffer.add(joinMessage);
-                process_JoinMessage(joinMessage);
-                break;
-            case GROUP:
-                break;
-            case IPTABLE:
-                break;
-            case FILETABLE:
-                break;
-            default:
-                break;
-        }
-
-    }
     public void response_tokenizer(String server_response) throws IOException {
         String[] response_data = server_response.split(" ");
         if (!response_data[1].equals("REGOK")) {
