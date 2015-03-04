@@ -1,6 +1,6 @@
 package lk.filetributed.model.protocols;
 
-public class JoinProtocol implements MessageProtocol{
+public class JoinProtocol extends MessageProtocol{
     private String ipAddress;
     private int port;
 
@@ -29,15 +29,13 @@ public class JoinProtocol implements MessageProtocol{
 
 
     @Override
-    public MessageProtocol initialize(String message) {
-        return null;
+    public void initialize(String message){
     }
 
     @Override
     public String toString() {
-        return "JoinProtocol{" +
-                "ipAddress='" + ipAddress + '\'' +
-                ", port=" + port +
-                '}';
+        String msg = "JOIN " + ipAddress + " " + port;
+        String length = String.format("%04d", msg.length()+5);
+        return length+" "+msg;
     }
 }

@@ -1,5 +1,7 @@
 package lk.filetributed.util;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 public class Utils {
     public static int getClusterID(String ipAddress, int port,int no_clusters){
         int result = ipAddress.hashCode();
@@ -8,4 +10,7 @@ public class Utils {
         return clusterID;
     }
 
+    public static String getMessageID() {
+        return RandomStringUtils.randomAlphanumeric(8);
+    }
 }

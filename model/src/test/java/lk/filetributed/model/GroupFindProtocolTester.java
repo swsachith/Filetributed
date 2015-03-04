@@ -1,7 +1,7 @@
 package lk.filetributed.model;
 
 import junit.framework.Assert;
-import lk.filetributed.model.protocols.GroupFindProtocol;
+import lk.filetributed.model.protocols.GroupProtocol;
 import org.junit.Test;
 
 public class GroupFindProtocolTester {
@@ -10,9 +10,9 @@ public class GroupFindProtocolTester {
         String clientIP = "127.0.0.1";
         String clusterID = "2";
         int port = 9889;
-        GroupFindProtocol groupFindProtocol = new GroupFindProtocol(clientIP, port);
+        GroupProtocol groupFindProtocol = new GroupProtocol(clientIP, port);
         String result = groupFindProtocol.toString();
         String expected = "0027 GROUP 127.0.0.1 9889 2";
-        Assert.assertEquals(expected,result);
+        Assert.assertEquals(expected, result);
     }
 }
