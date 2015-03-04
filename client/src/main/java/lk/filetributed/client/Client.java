@@ -91,16 +91,13 @@ public class Client extends Node{
      */
     private void messageResolver(String message) {
         //expected message type <length MessageType MessageID Payload>
-        StringTokenizer tokenizer = new StringTokenizer(message);
-        //disregard the length
-        tokenizer.nextElement();
-        //get the message type
-        String messageType = tokenizer.nextToken();
+        String[] receivedMessage = message.split(" ");
 
-        String messageID = tokenizer.nextToken();
-
-        switch (MessageProtocolType.valueOf(messageType)) {
+        switch (MessageProtocolType.valueOf(receivedMessage[1])) {
             case JOIN:
+                JoinProtocol joinMessage = new JoinProtocol();
+                joinMessage.initialize(message);
+                process_JoinMessage(joinMessage);
                 break;
             case GROUP:
                 break;
@@ -149,12 +146,13 @@ public class Client extends Node{
         }
     }
 
-    public String process_JOIN_RESP(String RECIEVED_IP, int RECIEVED_PORT){
+    public String process_JoinMessage(JoinProtocol joinProtocol){
         String response_MSG="";
 
         try {
-            this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP,
-                    RECIEVED_PORT + "", Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS) + ""));
+            this.getIpTable().addTableEntry(new TableEntry(joinProtocol.getIpAddress(),
+                    joinProtocol.getPort() + "", Utils.getClusterID(joinProtocol.getIpAddress(), joinProtocol.getPort(),
+                    NO_CLUSTERS) + ""));
             response_MSG = JoinProtocol.getJoinResponse(JoinStatus.SUCCESS);
         }
         catch(Exception ex){

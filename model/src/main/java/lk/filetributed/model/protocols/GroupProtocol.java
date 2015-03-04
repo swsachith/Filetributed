@@ -16,6 +16,9 @@ public class GroupProtocol extends MessageProtocol{
     private int port;
     private int clusterID;
 
+    public GroupProtocol() {
+    }
+
     public GroupProtocol(String clientIP, int port) {
         this.messageID = Utils.getMessageID();
         this.messageType = "GROUP";

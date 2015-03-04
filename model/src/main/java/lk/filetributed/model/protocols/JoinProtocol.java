@@ -9,6 +9,9 @@ public class JoinProtocol extends MessageProtocol{
     private int port;
     private int clusterID;
 
+    public JoinProtocol() {
+    }
+
     public JoinProtocol(String ipAddress, int port) {
         this.messageType = "JOIN";
         this.ipAddress = ipAddress;
