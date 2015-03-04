@@ -37,6 +37,7 @@ public class MessageDispatcher implements Runnable{
 
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, message.getPort());
                 clientSocket.send(sendPacket);
+                logger.info("SENT "+message.getMessage()+" to "+IPAddress);
 
             } catch (UnknownHostException e) {
                 logger.error("Error resolving IPAddress "+e.getMessage());
