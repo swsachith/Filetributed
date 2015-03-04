@@ -1,6 +1,9 @@
 package lk.filetributed.client;
 
 import lk.filetributed.dispatcher.MessageBuffer;
+import lk.filetributed.dispatcher.MessageDispatcher;
+import lk.filetributed.dispatcher.MessageOutBuffer;
+import lk.filetributed.model.DispatchMessage;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
@@ -32,13 +35,18 @@ public class Client extends Node{
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
 
     private MessageBuffer messageBuffer;
+    private MessageOutBuffer outBuffer;
+
     public Client() {
         super(CLIENT_IP, PORT, NO_CLUSTERS);
         messageBuffer = MessageBuffer.getInstance();
+        outBuffer = MessageOutBuffer.getInstance();
 
         initialize();
-        Thread thread = new Thread(new UDPServer(CLIENT_PORT));
-        thread.start();
+        Thread t_udpServer = new Thread(new UDPServer(CLIENT_PORT));
+        Thread t_messageDispatcher = new Thread(new MessageDispatcher());
+        t_udpServer.start();
+        t_messageDispatcher.start();
     }
 
     //connect with the system
@@ -170,7 +178,7 @@ public class Client extends Node{
                     msg=null;
                 }
                 ipMessage.initialize(msg);
-
+                outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
                 break;
             case IPTABLE:
                 break;

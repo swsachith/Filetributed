@@ -60,4 +60,44 @@ public class IPTableProtocol extends MessageProtocol {
     public void setIpTable(IPTable ipTable) {
         this.ipTable = ipTable;
     }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public int getClusterID() {
+        return clusterID;
+    }
+
+    public void setClusterID(int clusterID) {
+        this.clusterID = clusterID;
+    }
+
+    public String getEntries() {
+        return entries;
+    }
+
+    public void setEntries(String entries) {
+        this.entries = entries;
+    }
+
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
+    }
 }
