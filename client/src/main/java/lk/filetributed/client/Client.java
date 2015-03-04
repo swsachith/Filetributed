@@ -170,18 +170,23 @@ public class Client extends Node{
         switch (MessageProtocolType.valueOf(message.getMessageType())) {
             case JOIN:
                 String msg;
-                IPTableProtocol ipMessage = new IPTableProtocol();
+
                 if(message instanceof JoinProtocol){
                     msg = message.toString();
+                    String[] tokenz = msg.split(" ");
+                    String ipAddress = tokenz[3];
+                    String port = tokenz[4];
+
+                    IPTableProtocol ipMessage = new IPTableProtocol(ipAddress,Integer.parseInt(port),
+                            Integer.parseInt(this.getClusterID()), this.getIpTable());
+
+                    outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
+                    logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
+                            ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
                 }
                 else{
                     msg=null;
                 }
-                ipMessage.initialize(msg);
-
-                outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
-                logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
-                        ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
 
                 break;
             case IPTABLE:
