@@ -32,7 +32,7 @@ public class IPTableProtocol extends MessageProtocol {
 
     public void getIPTableResponse(String msg) {
         String[] recievedMessage = msg.split("#");
-        this.ipTable.setEntries(recievedMessage[1],
+        getIpTable().setEntries(recievedMessage[1],
                 Utils.getClusterID(recievedMessage[0].split(" ")[2], Integer.parseInt(recievedMessage[0].split(" ")[3]), NO_CLUSTERS));
 
     }
