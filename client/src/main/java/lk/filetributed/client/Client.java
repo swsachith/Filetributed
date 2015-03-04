@@ -94,7 +94,11 @@ public class Client extends Node{
         StringTokenizer tokenizer = new StringTokenizer(message);
         //disregard the length
         tokenizer.nextElement();
+        //get the message type
         String messageType = tokenizer.nextToken();
+
+        String messageID = tokenizer.nextToken();
+
         switch (MessageProtocolType.valueOf(messageType)) {
             case JOIN:
                 break;
@@ -172,7 +176,10 @@ public class Client extends Node{
 
         clusterID = Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
         Node node = new Node(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS);
-        String JOIN_MSG = JoinProtocol.getJoinMessage(CLIENT_IP,CLIENT_PORT);
+
+        //generating the join message
+        JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
+        String JOIN_MSG = joinProtocol.toString();
 
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName(RECIEVED_IP);

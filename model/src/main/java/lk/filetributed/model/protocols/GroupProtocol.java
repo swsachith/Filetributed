@@ -26,15 +26,10 @@ public class GroupProtocol extends MessageProtocol{
 
     @Override
     public void initialize(String message) {
-        StringTokenizer tokenizer = new StringTokenizer(message);
-
-        //disregard the length and the message type
-        tokenizer.nextElement();
-        tokenizer.nextElement();
-
-        this.messageID = tokenizer.nextToken();
-        this.clientIP = tokenizer.nextToken();
-        this.port = Integer.parseInt((String) tokenizer.nextElement());
+        String[] receivedMessage = message.split(" ");
+        this.messageID = receivedMessage[2];
+        this.clientIP = receivedMessage[3];
+        this.port = Integer.parseInt(receivedMessage[4]);
         this.messageType = "GROUP";
         this.clusterID = Utils.getClusterID(clientIP, port, NO_CLUSTERS);
 
