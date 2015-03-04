@@ -59,4 +59,14 @@ public class IPTable {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        String text="";
+        for (Iterator<TableEntry> iterator = entries.iterator(); iterator.hasNext();) {
+            TableEntry entry = iterator.next();
+            text += entry.getIpAddress()+":"+entry.getPort()+":"+entry.getClusterID()+" ";
+        }
+        return text;
+    }
 }

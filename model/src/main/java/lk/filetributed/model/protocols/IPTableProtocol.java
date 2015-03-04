@@ -50,7 +50,7 @@ public class IPTableProtocol extends MessageProtocol {
 
     @Override
     public String toString() {
-        String msg = "IPTABLE " + this.messageID + " " + this.ipAddress + " " + this.port + " " + this.ipTable;
+        String msg = "IPTABLE " + this.messageID + " " + this.ipAddress + " " + this.port + " " + this.ipTable.toString();
         String length = String.format("%04d", msg.length()+5);
         return length+" "+msg;
     }
