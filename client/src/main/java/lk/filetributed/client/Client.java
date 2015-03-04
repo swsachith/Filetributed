@@ -4,7 +4,6 @@ import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.dispatcher.MessageDispatcher;
 import lk.filetributed.dispatcher.MessageOutBuffer;
 import lk.filetributed.model.DispatchMessage;
-import lk.filetributed.model.FileTable;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
@@ -17,12 +16,7 @@ import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.List;
-import java.util.StringTokenizer;
 
 
 public class Client extends Node{
@@ -146,10 +140,7 @@ public class Client extends Node{
         Node node = new Node(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS);
 
         //generating the join message
-        JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
-        String JOIN_MSG = joinProtocol.toString();
-
-        outBuffer.add(new DispatchMessage(JOIN_MSG,RECIEVED_IP,RECIEVED_PORT));
+        sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
 
 
         FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
@@ -163,6 +154,19 @@ public class Client extends Node{
     public void process(String RECIEVED_IP_01, int RECIEVED_PORT_01,String RECIEVED_IP_02, int RECIEVED_PORT_02){
         int clusterID01;
         int clusterID02;
+
+        clusterID01 = Utils.getClusterID(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
+        Node node01 = new Node(RECIEVED_IP_01,RECIEVED_PORT_01,NO_CLUSTERS);
+
+        //generating the join message
+        sendJoinMessage(RECIEVED_IP_01, RECIEVED_PORT_01);
+
+        clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
+        Node node02 = new Node(RECIEVED_IP_02,RECIEVED_PORT_02,NO_CLUSTERS);
+
+        //generating the join message
+        sendJoinMessage(RECIEVED_IP_02, RECIEVED_PORT_02);
+
     }
 
     public void processBuffer() {
@@ -198,6 +202,15 @@ public class Client extends Node{
             default:
                 break;
         }
+    }
+
+    public void sendJoinMessage(String RECIEVED_IP, int RECIEVED_PORT){
+        //generating the join message
+        JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
+        String JOIN_MSG = joinProtocol.toString();
+
+        outBuffer.add(new DispatchMessage(JOIN_MSG,RECIEVED_IP,RECIEVED_PORT));
+
     }
 
 
