@@ -33,6 +33,7 @@ public class FileTableProtocol extends MessageProtocol {
 
     @Override
     public void initialize(String message) {
+        this.messageType = "FILETABLE";
         String[] receivedMessage = message.split(" ");
         this.messageID = receivedMessage[2];
         this.ipAddress = receivedMessage[3];
@@ -71,5 +72,15 @@ public class FileTableProtocol extends MessageProtocol {
 
     public void setClusterID(int clusterID) {
         this.clusterID = clusterID;
+    }
+
+    @Override
+    public String getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public String getMessageID() {
+        return messageID;
     }
 }
