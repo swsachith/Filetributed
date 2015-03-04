@@ -5,12 +5,14 @@ import lk.filetributed.model.IPTable;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
 import lk.filetributed.model.protocols.JoinProtocol;
+import lk.filetributed.model.protocols.MessageProtocolType;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class Client extends Node{
@@ -21,8 +23,8 @@ public class Client extends Node{
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9887;
-    private static final String USERNAME = "sachith";
+    private static final int CLIENT_PORT = 9886;
+    private static final String USERNAME = "withana";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -58,11 +60,14 @@ public class Client extends Node{
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
                 serverSocket.receive(receivePacket);
-                String sentence = new String( receivePacket.getData());
-                logger.info("RECEIVED: " + sentence);
+                String recv_message = new String( receivePacket.getData());
+                logger.info("RECEIVED: " + recv_message);
+
+
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
-                String capitalizedSentence = sentence.toUpperCase();
+
+                String capitalizedSentence = recv_message.toUpperCase();
                 sendData = capitalizedSentence.getBytes();
                 DatagramPacket sendPacket =
                         new DatagramPacket(sendData, sendData.length, IPAddress, port);
@@ -77,6 +82,30 @@ public class Client extends Node{
         Client client = new Client();
     }
 
+    /**
+     * resolves the UDP messages this get
+     * @param message
+     */
+    private void messageResolver(String message) {
+        //expected message type <length MessageType MessageID Payload>
+        StringTokenizer tokenizer = new StringTokenizer(message);
+        //disregard the length
+        tokenizer.nextElement();
+        String messageType = tokenizer.nextToken();
+        switch (MessageProtocolType.valueOf(messageType)) {
+            case JOIN:
+                break;
+            case GROUP:
+                break;
+            case IPTABLE:
+                break;
+            case FILETABLE:
+                break;
+            default:
+                break;
+        }
+
+    }
     public void response_tokenizer(String server_response) throws IOException {
         String[] response_data = server_response.split(" ");
         if (!response_data[1].equals("REGOK")) {
