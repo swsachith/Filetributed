@@ -6,6 +6,7 @@ import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
 import lk.filetributed.model.protocols.JoinProtocol;
 import lk.filetributed.model.protocols.JoinStatus;
+import lk.filetributed.model.protocols.MessageProtocol;
 import lk.filetributed.model.protocols.MessageProtocolType;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
@@ -157,6 +158,20 @@ public class Client extends Node{
         int clusterID01;
         int clusterID02;
     }
+
+    public void processBuffer() {
+        MessageProtocol message = messageBuffer.getMessage();
+
+        switch (MessageProtocolType.valueOf(message.getMessageType())) {
+            case JOIN:
+                break;
+            case IPTABLE:
+                break;
+            default:
+                break;
+        }
+    }
+
 
 
 }
