@@ -4,10 +4,7 @@ import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
-import lk.filetributed.model.protocols.JoinProtocol;
-import lk.filetributed.model.protocols.JoinStatus;
-import lk.filetributed.model.protocols.MessageProtocol;
-import lk.filetributed.model.protocols.MessageProtocolType;
+import lk.filetributed.model.protocols.*;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -164,6 +161,16 @@ public class Client extends Node{
 
         switch (MessageProtocolType.valueOf(message.getMessageType())) {
             case JOIN:
+                String msg;
+                IPTableProtocol ipMessage = new IPTableProtocol();
+                if(message instanceof JoinProtocol){
+                    msg = message.toString();
+                }
+                else{
+                    msg=null;
+                }
+                ipMessage.initialize(msg);
+
                 break;
             case IPTABLE:
                 break;
