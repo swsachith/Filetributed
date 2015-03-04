@@ -1,5 +1,6 @@
 package lk.filetributed.client;
 
+import lk.filetributed.cache.MessageCache;
 import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.model.protocols.JoinProtocol;
 import lk.filetributed.model.protocols.MessageProtocolType;
@@ -15,10 +16,12 @@ public class UDPServer extends Thread {
     private static Logger logger = Logger.getLogger(UDPServer.class);
     private final int server_port;
     private MessageBuffer messageBuffer;
+    private MessageCache messageCache;
 
     public UDPServer(int server_port) {
         this.messageBuffer = MessageBuffer.getInstance();
         this.server_port = server_port;
+        this.messageCache = new MessageCache(1000,1000,1000);
     }
 
     @Override
@@ -63,6 +66,11 @@ public class UDPServer extends Thread {
         message = message.trim();
         //expected message type <length MessageType MessageID Payload>
         String[] receivedMessage = message.split(" ");
+        String messageID = receivedMessage[2];
+        if(messageCache.get(messageID)==null)
+            messageCache.put(messageID,messageID);
+        else
+            return;
 
         switch (MessageProtocolType.valueOf(receivedMessage[1])) {
             case JOIN:

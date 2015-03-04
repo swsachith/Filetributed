@@ -3,10 +3,6 @@ import java.util.ArrayList;
 import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.map.LRUMap;
 
-/**
- * @author Crunchify.com
- */
-
 public class MessageCache<K, T> {
 
     private long timeToLive;
