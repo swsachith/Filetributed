@@ -2,6 +2,7 @@ package lk.filetributed.model.protocols;
 
 import lk.filetributed.model.IPTable;
 import lk.filetributed.model.Node;
+import lk.filetributed.model.TableEntry;
 import lk.filetributed.util.Utils;
 
 /**
@@ -49,8 +50,16 @@ public class IPTableProtocol extends MessageProtocol {
         this.ipAddress = tokenz[3];
         this.port = Integer.parseInt(tokenz[4]);
         this.clusterID = Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS);
-        this.ipTable = getIpTable();
-        this.entries = ipTable.convertToString();
+        if(this.clusterID == getClusterID()) {
+            this.ipTable = getIpTable();
+            this.entries = ipTable.convertToString();
+        }
+        else{
+            this.entries = null;
+            if(getIpTable().searchClusterID(this.clusterID+"")){
+                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
+            }
+        }
     }
 
     public IPTable getIpTable() {
