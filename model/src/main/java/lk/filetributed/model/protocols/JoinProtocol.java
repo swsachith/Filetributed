@@ -15,12 +15,6 @@ public class JoinProtocol extends MessageProtocol{
         this.port = port;
     }
 
-    public static String getJoinMessage(String ipaddress, int port) {
-        String msg = "JOIN " + ipaddress + " " + port;
-        String length = String.format("%04d", msg.length()+5);
-        return length+" "+msg;
-    }
-
     public static String getJoinResponse(JoinStatus status) {
         String msg = "";
         if (status.equals(JoinStatus.SUCCESS)) {
