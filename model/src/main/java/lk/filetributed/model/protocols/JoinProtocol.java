@@ -34,11 +34,22 @@ public class JoinProtocol extends MessageProtocol{
 
     @Override
     public void initialize(String message) {
+        this.messageType = "JOIN";
         String[] receivedMessage = message.split(" ");
         this.messageID = receivedMessage[2];
         this.ipAddress = receivedMessage[3];
         this.port = Integer.parseInt(receivedMessage[4]);
         this.clusterID = Utils.getClusterID(ipAddress, port, NO_CLUSTERS);
+    }
+
+    @Override
+    public String getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public String getMessageID() {
+        return messageID;
     }
 
     @Override

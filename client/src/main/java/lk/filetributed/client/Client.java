@@ -4,10 +4,15 @@ import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.dispatcher.MessageDispatcher;
 import lk.filetributed.dispatcher.MessageOutBuffer;
 import lk.filetributed.model.DispatchMessage;
+import lk.filetributed.model.FileTable;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.model.Node;
 import lk.filetributed.model.TableEntry;
 import lk.filetributed.model.protocols.*;
+import lk.filetributed.model.protocols.FileTableProtocol;
+import lk.filetributed.model.protocols.JoinProtocol;
+import lk.filetributed.model.protocols.JoinStatus;
+import lk.filetributed.model.protocols.MessageProtocolType;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -24,12 +29,12 @@ public class Client extends Node{
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "192.168.43.77";
+    private static final String SERVER_NAME = "127.0.0.1";
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9887;
-    private static final String USERNAME = "sachith";
+    private static final int CLIENT_PORT = 9886;
+    private static final String USERNAME = "666ith";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -42,11 +47,12 @@ public class Client extends Node{
         messageBuffer = MessageBuffer.getInstance();
         outBuffer = MessageOutBuffer.getInstance();
 
-        initialize();
         Thread t_udpServer = new Thread(new UDPServer(CLIENT_PORT));
         Thread t_messageDispatcher = new Thread(new MessageDispatcher());
         t_udpServer.start();
         t_messageDispatcher.start();
+        initFileTable(FILE_NAMES);
+        initialize();
     }
 
     //connect with the system
@@ -56,6 +62,11 @@ public class Client extends Node{
             response_tokenizer(result);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private void initFileTable(String[] fileNames){
+        for (String fileName:fileNames){
+            fileTable.addTableEntry(new FileTableEntry(fileName,CLIENT_IP,CLIENT_PORT));
         }
     }
     public List<FileTableEntry> searchFile(String filename) {
@@ -100,6 +111,9 @@ public class Client extends Node{
                 System.out.println("failed, can’t register. BS full.");
                 break;
         }
+        while(true){
+            processBuffer();
+        }
     }
 
     public String process_JoinMessage(JoinProtocol joinProtocol){
@@ -135,28 +149,15 @@ public class Client extends Node{
         JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
         String JOIN_MSG = joinProtocol.toString();
 
-        DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName(RECIEVED_IP);
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
-        sendData = JOIN_MSG.getBytes();
+        outBuffer.add(new DispatchMessage(JOIN_MSG,RECIEVED_IP,RECIEVED_PORT));
 
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, RECIEVED_PORT);
-        clientSocket.send(sendPacket);
 
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.receive(receivePacket);
+        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
+        String fileTableMSG = fileTableProtocol.toString();
 
-        String sentence = new String( receivePacket.getData());
-        logger.info("RECEIVED: " + sentence);
-        if (sentence.split(" ")[2].equals("0")){
+        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
 
-        }
 
-        /*TableEntry tableEntry = new TableEntry(node01.getIpAddress(),node01.getPort()+"",node01.getClusterID());
-
-                IPTable ipTable = new IPTable();
-                ipTable.addTableEntry(tableEntry);*/
 
     }
     public void process(String RECIEVED_IP_01, int RECIEVED_PORT_01,String RECIEVED_IP_02, int RECIEVED_PORT_02){
@@ -170,19 +171,29 @@ public class Client extends Node{
         switch (MessageProtocolType.valueOf(message.getMessageType())) {
             case JOIN:
                 String msg;
-                IPTableProtocol ipMessage = new IPTableProtocol();
+
                 if(message instanceof JoinProtocol){
                     msg = message.toString();
+                    String[] tokenz = msg.split(" ");
+                    String ipAddress = tokenz[3];
+                    String port = tokenz[4];
+
+                    IPTableProtocol ipMessage = new IPTableProtocol(ipAddress,Integer.parseInt(port),
+                            Integer.parseInt(this.getClusterID()), this.getIpTable());
+
+                    outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
+                    logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
+                            ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
                 }
                 else{
                     msg=null;
                 }
-                ipMessage.initialize(msg);
-
-                outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
 
                 break;
             case IPTABLE:
+                break;
+            case FILETABLE:
+                System.out.println("#######"+message.toString());
                 break;
             default:
                 break;
