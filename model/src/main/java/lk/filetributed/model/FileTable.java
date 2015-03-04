@@ -41,4 +41,15 @@ public class FileTable {
         else
             return results;
     }
+
+    @Override
+    public String toString() {
+        int size = entries.size();
+        String entryList=size+";";
+        for (Iterator<FileTableEntry> iterator = entries.iterator(); iterator.hasNext(); ) {
+            FileTableEntry entry = iterator.next();
+            entryList+=entry+";";
+        }
+    return entryList;
+    }
 }
