@@ -36,7 +36,6 @@ public class GroupProtocol extends MessageProtocol{
         this.clientIP = tokenizer.nextToken();
         this.port = Integer.parseInt((String) tokenizer.nextElement());
         this.messageType = "GROUP";
-        this.messageID = Utils.getMessageID();
         this.clusterID = Utils.getClusterID(clientIP, port, NO_CLUSTERS);
 
     }
