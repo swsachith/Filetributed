@@ -12,11 +12,12 @@ import lk.filetributed.model.protocols.MessageProtocolType;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
+import javax.rmi.CORBA.Util;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class Client extends Node {
@@ -26,18 +27,24 @@ public class Client extends Node {
     private static final String SERVER_NAME = "127.0.0.1";
     private static final int PORT = 9889;
 
-    private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9886;
-    private static final String USERNAME = "6666";
-    private static final int NO_CLUSTERS = 3;
+    private static String CLIENT_IP;
+    private static int CLIENT_PORT;
+    private static String USERNAME;
+    private static int NO_CLUSTERS;
 
-    private static final String[] FILE_NAMES = {"Adventures of Tintin", "Jack and Jill"};
+    private static String[] FILE_NAMES;
 
     private MessageBuffer messageBuffer;
     private MessageOutBuffer outBuffer;
 
     public Client() {
-        super(CLIENT_IP, PORT, NO_CLUSTERS);
+        configClient("client/config/client1.xml");
+
+        super.ipAddress = CLIENT_IP;
+        super.port=CLIENT_PORT;
+        super.NO_CLUSTERS=NO_CLUSTERS;
+        super.setCluster();
+
         messageBuffer = MessageBuffer.getInstance();
         outBuffer = MessageOutBuffer.getInstance();
 
@@ -63,6 +70,20 @@ public class Client extends Node {
         for (String fileName : fileNames) {
             fileTable.addTableEntry(new FileTableEntry(fileName, CLIENT_IP, CLIENT_PORT));
         }
+    }
+
+    private void configClient(String configFileLocation){
+
+        Properties properties = Utils.loadPropertyFile(configFileLocation);
+
+        CLIENT_IP=properties.getProperty("CLIENT_IP");
+        CLIENT_PORT=Integer.parseInt(properties.getProperty("CLIENT_PORT"));
+        USERNAME=properties.getProperty("USERNAME");
+        NO_CLUSTERS=Integer.parseInt(properties.getProperty("NO_CLUSTERS"));
+
+        String fileListPath = properties.getProperty("FILE_LIST_PATH");
+
+        FILE_NAMES= Utils.getFileList(fileListPath);
     }
 
     public List<FileTableEntry> searchFile(String filename) {

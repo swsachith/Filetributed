@@ -4,7 +4,7 @@ import lk.filetributed.util.Utils;
 
 public class Node {
 
-    protected final int NO_CLUSTERS;
+    protected int NO_CLUSTERS;
     protected String ipAddress;
     protected int port;
     protected String username;
@@ -19,6 +19,10 @@ public class Node {
         this.ipTable = new IPTable();
         this.fileTable = new FileTable();
         setCluster();
+    }
+    public Node(){
+        this.ipTable = new IPTable();
+        this.fileTable = new FileTable();
     }
 
     public void setClusterID(int clusterID) {
