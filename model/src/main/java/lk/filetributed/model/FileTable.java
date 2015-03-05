@@ -41,6 +41,13 @@ public class FileTable {
         else
             return results;
     }
+    public void mergeEntriesFromTable(FileTable receivedTable){
+        List<FileTableEntry> receivedTableEntries = receivedTable.getEntries();
+        for (Iterator<FileTableEntry> iterator = receivedTableEntries.iterator(); iterator.hasNext();) {
+            FileTableEntry entry = iterator.next();
+            addTableEntry(entry);
+        }
+    }
 
     @Override
     public String toString() {
