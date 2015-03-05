@@ -28,7 +28,7 @@ public class Client extends Node{
 
     private static final String CLIENT_IP = "127.0.0.1";
     private static final int CLIENT_PORT = 9888;
-    private static final String USERNAME = "sacadas";
+    private static final String USERNAME =   "c";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin","Jack and Jill"};
@@ -139,6 +139,8 @@ public class Client extends Node{
         clusterID = Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
         Node node = new Node(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS);
 
+        getIpTable().addTableEntry(new TableEntry(RECIEVED_IP, RECIEVED_PORT+"", clusterID+""));
+
         //generating the join message
         sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
 
@@ -158,11 +160,15 @@ public class Client extends Node{
         clusterID01 = Utils.getClusterID(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
         Node node01 = new Node(RECIEVED_IP_01,RECIEVED_PORT_01,NO_CLUSTERS);
 
+        getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_01, RECIEVED_PORT_01+"", clusterID01+""));
+
         //generating the join message
         sendJoinMessage(RECIEVED_IP_01, RECIEVED_PORT_01);
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
         Node node02 = new Node(RECIEVED_IP_02,RECIEVED_PORT_02,NO_CLUSTERS);
+
+        getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_02, RECIEVED_PORT_02+"", clusterID02+""));
 
         //generating the join message
         sendJoinMessage(RECIEVED_IP_02, RECIEVED_PORT_02);
@@ -171,10 +177,10 @@ public class Client extends Node{
 
     public void processBuffer() {
         MessageProtocol message = messageBuffer.getMessage();
+        String msg;
 
         switch (MessageProtocolType.valueOf(message.getMessageType())) {
             case JOIN:
-                String msg;
 
                 if(message instanceof JoinProtocol){
                     msg = message.toString();
@@ -183,9 +189,9 @@ public class Client extends Node{
                     String port = tokenz[4];
 
                     IPTableProtocol ipMessage = new IPTableProtocol(ipAddress,Integer.parseInt(port),
-                            Integer.parseInt(this.getClusterID()), this.getIpTable());
+                            Integer.parseInt(this.getClusterID()), getIpTable());
 
-                    outBuffer.add(new DispatchMessage(ipMessage.toString(),ipMessage.getIpAddress(),ipMessage.getPort()));
+                    outBuffer.add(new DispatchMessage(ipMessage.toString(), ipMessage.getIpAddress(), ipMessage.getPort()));
                     //logger.info("MessageID : "+ipMessage.getMessageID()+" IPTable SENT from: "+getIpAddress()+":"+getPort()+" TO "+
                     //        ipMessage.getIpAddress()+":"+ipMessage.getPort()+" ----- "+ipMessage.toString());
                 }
@@ -195,6 +201,12 @@ public class Client extends Node{
 
                 break;
             case IPTABLE:
+                /*if(message instanceof IPTableProtocol){
+                    ((IPTableProtocol) message).addNewEntriesToIPTable(Integer.parseInt(getClusterID()));
+
+
+                }*/
+                logger.info("IPTable Merging should happen here!");
                 break;
             case FILETABLE:
                 System.out.println("#######"+message.toString());
@@ -202,6 +214,7 @@ public class Client extends Node{
             default:
                 break;
         }
+        logger.info("IP TABLE LOG @ PORT"+CLIENT_PORT+" : "+getIpTable().toString());
     }
 
     public void sendJoinMessage(String RECIEVED_IP, int RECIEVED_PORT){

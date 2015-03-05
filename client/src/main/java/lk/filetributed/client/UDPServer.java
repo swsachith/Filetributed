@@ -83,7 +83,9 @@ public class UDPServer extends Thread {
             case GROUP:
                 break;
             case IPTABLE:
-                logger.info(message);
+                IPTableProtocol ipMessage = new IPTableProtocol();
+                ipMessage.initialize(message);
+                messageBuffer.add(ipMessage);
                 break;
             case FILETABLE:
                 FileTableProtocol fileTableProtocol = new FileTableProtocol();

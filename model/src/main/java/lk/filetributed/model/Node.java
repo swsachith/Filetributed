@@ -9,7 +9,7 @@ public class Node {
     private int port;
     private String username;
     private String clusterID;
-    private IPTable ipTable;
+    protected IPTable ipTable;
     protected FileTable fileTable;
 
     public Node(String ipAddress, int port,int clusters) {

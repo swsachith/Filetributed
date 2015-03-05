@@ -23,22 +23,22 @@ public class IPTableProtocol extends MessageProtocol {
     }
 
     public IPTableProtocol(String ipAddress, int port, int clusterID, IPTable ipTable) {
+        this.messageType="IPTABLE";
         this.ipAddress = ipAddress;
         this.port = port;
         this.clusterID = Utils.getClusterID(ipAddress, port, NO_CLUSTERS);
         this.ipTable = ipTable;
         this.messageID = Utils.getMessageID();
         if(this.clusterID == clusterID) {
-            this.ipTable = ipTable;
             this.entries = ipTable.convertToString();
+            this.ipTable.setEntries(entries, clusterID);
         }
         else{
-            this.entries = null;
             if(getIpTable().searchClusterID(this.clusterID+"")){
+                this.entries = "#";
                 getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
             }
         }
-        this.messageType="IPTABLE";
     }
 
     public void getIPTableResponse(String msg) {
@@ -48,31 +48,52 @@ public class IPTableProtocol extends MessageProtocol {
 
     }
 
+    public void addNewEntriesToIPTable(int clusterID){
+        if(this.clusterID == clusterID) {
+
+            this.ipTable.setEntries(entries, clusterID);
+
+        }
+        else{
+
+            TableEntry tableEntry = new TableEntry(this.ipAddress, this.port + "", this.clusterID + "");
+            if(this.ipTable==null){
+                IPTable  tempIPTable = new IPTable();
+                tempIPTable.addTableEntry(tableEntry);
+                this.ipTable = tempIPTable;
+            }
+            else if(this.ipTable.searchClusterID(this.clusterID+"")){
+                this.ipTable.addTableEntry(tableEntry);
+            }
+        }
+
+    }
+
     @Override
     public String toString() {
-        String msg = "IPTABLE " + this.messageID + " " + this.ipAddress + " " + this.port + " " + this.ipTable.toString();
+        String msg = "IPTABLE " + this.messageID + " " + this.ipAddress + " " + this.port + " " + this.entries;
         String length = String.format("%04d", msg.length()+5);
         return length+" "+msg;
     }
 
     @Override
     public void initialize(String message) {
+        String message_data = message.split("#")[0];
         this.messageType="IPTABLE";
-        String[] tokenz = message.split(" ");
+        String[] tokenz = message_data.split(" ");
+
         this.messageID = tokenz[2];
         this.ipAddress = tokenz[3];
         this.port = Integer.parseInt(tokenz[4]);
         this.clusterID = Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS);
-        if(this.clusterID == getClusterID()) {
-            this.ipTable = getIpTable();
-            this.entries = ipTable.convertToString();
+
+        if(message.length()!=message.indexOf('#')+1) {
+            this.entries = message.split("#")[1];
         }
         else{
-            this.entries = null;
-            if(getIpTable().searchClusterID(this.clusterID+"")){
-                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
-            }
+            System.out.println("Received IPTable is empty.");
         }
+
     }
 
     public IPTable getIpTable() {
