@@ -24,11 +24,13 @@ public class QueryProtocol extends MessageProtocol {
     public QueryProtocol(){
     }
 
-    public QueryProtocol(String ipAddress, int port){
+    public QueryProtocol(String ipAddress, int port, int noOfHops, String keyword) {
         this.messageType = "QUERY";
         this.ipAddress = ipAddress;
         this.port = port;
         this.messageID = Utils.getMessageID();
+        this.noOfHops = noOfHops;
+        this.keyword = keyword;
     }
 
     @Override
