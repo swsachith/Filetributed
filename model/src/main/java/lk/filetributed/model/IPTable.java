@@ -22,13 +22,13 @@ public class IPTable {
         entries.add(newEntry);
     }
 
-    public boolean searchClusterID(String clusterid) {
+    public TableEntry searchClusterID(String clusterid) {
         for (Iterator<TableEntry> iterator = entries.iterator(); iterator.hasNext();) {
             TableEntry entry = iterator.next();
             if (entry.getClusterID().equals(clusterid))
-                return false;
+                return entry;
         }
-        return true;
+        return null;
     }
 
     public void removeTableEntry(TableEntry oldEntry) {
@@ -53,7 +53,7 @@ public class IPTable {
                 newEntry = new TableEntry(entry.split(":")[0],entry.split(":")[1],entry.split(":")[2]);
                 addTableEntry(newEntry);
             }
-            if(searchClusterID(data[2])){
+            if(searchClusterID(data[2])==null){
                 newEntry = new TableEntry(entry.split(":")[0],entry.split(":")[1],entry.split(":")[2]);
                 this.entries.add(newEntry);
             }
@@ -68,5 +68,9 @@ public class IPTable {
             text += entry.getIpAddress()+":"+entry.getPort()+":"+entry.getClusterID()+" ";
         }
         return text;
+    }
+
+    public boolean isEmpty() {
+        return (entries.size() == 0) ? true : false;
     }
 }

@@ -4,11 +4,11 @@ import lk.filetributed.util.Utils;
 
 public class Node {
 
-    private final int NO_CLUSTERS;
-    private String ipAddress;
-    private int port;
-    private String username;
-    private String clusterID;
+    protected final int NO_CLUSTERS;
+    protected String ipAddress;
+    protected int port;
+    protected String username;
+    protected int clusterID;
     protected IPTable ipTable;
     protected FileTable fileTable;
 
@@ -21,7 +21,7 @@ public class Node {
         setCluster();
     }
 
-    public void setClusterID(String clusterID) {
+    public void setClusterID(int clusterID) {
         this.clusterID = clusterID;
     }
 
@@ -65,13 +65,13 @@ public class Node {
         this.username = username;
     }
 
-    public String getClusterID() {
+    public int getClusterID() {
         return clusterID;
     }
 
     public void setCluster() {
 
-        clusterID = String.valueOf(Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS));
+        clusterID = Utils.getClusterID(this.ipAddress, this.port, NO_CLUSTERS);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class IPTableProtocol extends MessageProtocol {
             this.ipTable.setEntries(entries, clusterID);
         }
         else{
-            if(getIpTable().searchClusterID(this.clusterID+"")){
+            if(getIpTable().searchClusterID(this.clusterID+"")==null){
                 this.entries = "#";
                 getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
             }
@@ -62,7 +62,7 @@ public class IPTableProtocol extends MessageProtocol {
                 tempIPTable.addTableEntry(tableEntry);
                 this.ipTable = tempIPTable;
             }
-            else if(this.ipTable.searchClusterID(this.clusterID+"")){
+            else if(this.ipTable.searchClusterID(this.clusterID+"")==null){
                 this.ipTable.addTableEntry(tableEntry);
             }
         }
