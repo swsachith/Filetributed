@@ -6,6 +6,7 @@ import lk.filetributed.model.protocols.FileTableProtocol;
 import lk.filetributed.model.protocols.IPTableProtocol;
 import lk.filetributed.model.protocols.JoinProtocol;
 import lk.filetributed.model.protocols.MessageProtocolType;
+import lk.filetributed.model.protocols.QueryProtocol;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -91,6 +92,11 @@ public class UDPServer extends Thread {
                 FileTableProtocol fileTableProtocol = new FileTableProtocol();
                 fileTableProtocol.initialize(message);
                 messageBuffer.add(fileTableProtocol);
+                break;
+            case QUERY:
+                QueryProtocol queryMessage = new QueryProtocol();
+                queryMessage.initialize(message);
+                messageBuffer.add(queryMessage);
                 break;
             default:
                 break;
