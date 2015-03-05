@@ -91,7 +91,7 @@ public class Client extends Node {
             case 1:
                 process(response_data[3], Integer.parseInt(response_data[4]));
                 break;
-            case 2:
+            case 2: case 3: case 4:
                 process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
                 break;
             case 9999:
@@ -173,7 +173,7 @@ public class Client extends Node {
 
 
                 }*/
-                logger.info("IPTable Merging should happen here!");
+                //logger.info("IPTable Merging should happen here!");
                 break;
             case FILETABLE:
                 System.out.println("#######" + message.toString());
@@ -189,7 +189,7 @@ public class Client extends Node {
             default:
                 break;
         }
-        logger.info("IP TABLE LOG @ PORT" + CLIENT_PORT + " : " + getIpTable().toString());
+        //logger.info("IP TABLE LOG @ PORT" + CLIENT_PORT + " : " + getIpTable().toString());
     }
 
     /**
@@ -199,6 +199,7 @@ public class Client extends Node {
      */
     private void process_JoinMessage(JoinProtocol message) {
         int clusterID = message.getClusterID();
+
         if (clusterID == this.getClusterID()) { //check if it's in the same cluster
             String ipAddress = message.getIpAddress();
             int port = message.getPort();
@@ -210,11 +211,22 @@ public class Client extends Node {
                 outBuffer.add(new DispatchMessage(ipMessage.toString(), ipMessage.getIpAddress(), ipMessage.getPort()));
                 logger.info("Sending IPTables ...: " + ipMessage.toString());
             }
+
+            //adds the new node to the IPTable
+            TableEntry entry = new TableEntry(message.getIpAddress(),String.valueOf(message.getPort()),
+                    String.valueOf(message.getClusterID()));
+            this.getIpTable().addTableEntry(entry);
+
             //TODO Send the file table here
+
+            //If not in the same cluster
         } else {
             TableEntry entry = this.ipTable.searchClusterID(String.valueOf(clusterID));
+
             if (entry == null) { //there's no entry in the IP table for this cluster
-                //TODO add this entry to the IPTable
+                entry = new TableEntry(message.getIpAddress(),String.valueOf(message.getPort()),
+                        String.valueOf(message.getClusterID()));
+                this.getIpTable().addTableEntry(entry);
 
             } else { //there's an entry in the IP table for this cluster
                 GroupProtocol groupMessage = new GroupProtocol(entry.getIpAddress(), Integer.parseInt(entry.getPort()));
@@ -249,7 +261,7 @@ public class Client extends Node {
             String ipAddress = message.getIpAddress();
             int port = message.getPort();
 
-            if(results.size() > 0) {
+            if(results != null && results.size()>0) {
                 // generating QueryHit message
                 QueryHitProtocol queryHitMessage = new QueryHitProtocol(ipAddress, port, results);
                 outBuffer.add(new DispatchMessage(queryHitMessage.toString(), ipAddress, port));
