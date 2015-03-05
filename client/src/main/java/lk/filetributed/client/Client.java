@@ -3,10 +3,7 @@ package lk.filetributed.client;
 import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.dispatcher.MessageDispatcher;
 import lk.filetributed.dispatcher.MessageOutBuffer;
-import lk.filetributed.model.DispatchMessage;
-import lk.filetributed.model.FileTableEntry;
-import lk.filetributed.model.Node;
-import lk.filetributed.model.TableEntry;
+import lk.filetributed.model.*;
 import lk.filetributed.model.protocols.*;
 import lk.filetributed.model.protocols.FileTableProtocol;
 import lk.filetributed.model.protocols.JoinProtocol;
@@ -17,7 +14,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Client extends Node {
@@ -243,17 +242,36 @@ public class Client extends Node {
     }
 
     public void process_queryMessage(QueryProtocol message) {
-        List<FileTableEntry> results = searchFile(message.getKeyword());
-
-        if(results.size()>0) {
-            // generating QueryHit message
+        int hopCount = message.getNoOfHops();
+        if(hopCount > 0) {
+            hopCount--;
+            List<FileTableEntry> results = searchFile(message.getKeyword());
             String ipAddress = message.getIpAddress();
             int port = message.getPort();
-            QueryHitProtocol queryHitMessage = new QueryHitProtocol(ipAddress, port, results);
 
-            outBuffer.add(new DispatchMessage(queryHitMessage.toString(), ipAddress, port));
+            if(results.size() > 0) {
+                // generating QueryHit message
+                QueryHitProtocol queryHitMessage = new QueryHitProtocol(ipAddress, port, results);
+                outBuffer.add(new DispatchMessage(queryHitMessage.toString(), ipAddress, port));
+            }
+        } if(hopCount > 0){ // check hopCount and forward QUERY message
+            message.setNoOfHops(hopCount);
+            int clusterID = this.clusterID;
+            if(!this.getIpTable().isEmpty()) {
+                List<TableEntry> ipTable = this.ipTable.getEntries();
+                for (TableEntry entry : ipTable) {
+                    // send QUERY message to other clusters
+                    // FIXME filter out the query source's cluster before forwarding
+                    if(!entry.getClusterID().equals(clusterID)) {
+                        outBuffer.add(new DispatchMessage(message.toString(),entry.getIpAddress(),
+                                Integer.parseInt(entry.getPort())));
+                    }
+                }
+            }
         }
-        //TODO forward this to other clusters after reducing the hop count
+
+
+
     }
 
 }
