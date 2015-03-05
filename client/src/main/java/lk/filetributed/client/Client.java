@@ -161,15 +161,12 @@ public class Client extends Node {
     public void processBuffer() {
         MessageProtocol message = messageBuffer.getMessage();
         switch (MessageProtocolType.valueOf(message.getMessageType())) {
-            case JOIN:
-                String msg;
-                if (message instanceof JoinProtocol) {
-                    process_JoinMessage((JoinProtocol) message);
-                } else {
-                    msg = null;
-                }
 
+            case JOIN:
+                if (message instanceof JoinProtocol)
+                    process_JoinMessage((JoinProtocol) message);
                 break;
+
             case IPTABLE:
                 /*if(message instanceof IPTableProtocol){
                     ((IPTableProtocol) message).addNewEntriesToIPTable(Integer.parseInt(getClusterID()));
@@ -180,6 +177,10 @@ public class Client extends Node {
                 break;
             case FILETABLE:
                 System.out.println("#######" + message.toString());
+                break;
+            case GROUP:
+                if (message instanceof GroupProtocol)
+                    process_groupMessage((GroupProtocol) message);
                 break;
             default:
                 break;
@@ -194,7 +195,7 @@ public class Client extends Node {
      */
     private void process_JoinMessage(JoinProtocol message) {
         int clusterID = message.getClusterID();
-        if (clusterID == this.getClusterID()) {
+        if (clusterID == this.getClusterID()) { //check if it's in the same cluster
             String ipAddress = message.getIpAddress();
             int port = message.getPort();
 
@@ -210,11 +211,21 @@ public class Client extends Node {
             TableEntry entry = this.ipTable.searchClusterID(String.valueOf(clusterID));
             if (entry == null) { //there's no entry in the IP table for this cluster
                 //TODO add this entry to the IPTable
+
             } else { //there's an entry in the IP table for this cluster
-                //TODO send Group Message
+                GroupProtocol groupMessage = new GroupProtocol(entry.getIpAddress(), Integer.parseInt(entry.getPort()));
+                outBuffer.add(new DispatchMessage(groupMessage.toString(), ipAddress, port));
             }
         }
 
+    }
+
+    public void process_groupMessage(GroupProtocol message) {
+        int clusterID = message.getClusterID();
+        if (clusterID == this.getClusterID()) { //check if it's in the same cluster
+            JoinProtocol joinMessage = new JoinProtocol(message.getClientIP(), message.getPort());
+            outBuffer.add(new DispatchMessage(joinMessage.toString(), message.getClientIP(), message.getPort()));
+        }
     }
 
     public void sendJoinMessage(String RECIEVED_IP, int RECIEVED_PORT) {
