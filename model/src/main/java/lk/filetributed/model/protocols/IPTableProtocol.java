@@ -22,21 +22,23 @@ public class IPTableProtocol extends MessageProtocol {
 
     }
 
-    public IPTableProtocol(String ipAddress, int port, int clusterID, IPTable ipTable) {
+    public IPTableProtocol(String ipAddressJoinSender, int portJoinSender, int clusterIDJoinSender,
+                           String ipAddressJoinReceiver, int portJoinReceiver, int clusterIDJoinReceiver, IPTable ipTableJoinReciever) {
         this.messageType="IPTABLE";
-        this.ipAddress = ipAddress;
-        this.port = port;
-        this.clusterID = Utils.getClusterID(ipAddress, port, NO_CLUSTERS);
-        this.ipTable = ipTable;
+        this.ipAddress = ipAddressJoinReceiver;
+        this.port = portJoinReceiver;
+        this.clusterID = clusterIDJoinReceiver;
+        this.ipTable = ipTableJoinReciever;
         this.messageID = Utils.getMessageID();
-        if(this.clusterID == clusterID) {
+        if(clusterIDJoinReceiver == clusterIDJoinSender) {
             this.entries = ipTable.convertToString();
-            this.ipTable.setEntries(entries, clusterID);
+//            this.ipTable.setEntries(entries, clusterID);
         }
         else{
             if(getIpTable().searchClusterID(this.clusterID+"")==null){
                 this.entries = "#";
-                getIpTable().addTableEntry(new TableEntry(this.ipAddress, this.port+"", this.clusterID+""));
+                getIpTable().addTableEntry(new TableEntry(ipAddressJoinSender, String.valueOf(portJoinSender),
+                        String.valueOf(clusterIDJoinSender)));
             }
         }
     }
@@ -94,6 +96,12 @@ public class IPTableProtocol extends MessageProtocol {
             System.out.println("Received IPTable is empty.");
         }
 
+    }
+
+    public void mergeIPTables(IPTable ipTable, int clusterID){
+        if(clusterID==this.clusterID){
+            ipTable.setEntries(this.entries, clusterID);
+        }
     }
 
     public IPTable getIpTable() {

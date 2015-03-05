@@ -13,10 +13,7 @@ import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class Client extends Node {
@@ -27,8 +24,8 @@ public class Client extends Node {
     private static final int PORT = 9889;
 
     private static final String CLIENT_IP = "127.0.0.1";
-    private static final int CLIENT_PORT = 9886;
-    private static final String USERNAME = "24332sa";
+    private static final int CLIENT_PORT = 9887;
+    private static final String USERNAME = "b";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin", "Jack and Jill"};
@@ -168,11 +165,9 @@ public class Client extends Node {
                 break;
 
             case IPTABLE:
-                /*if(message instanceof IPTableProtocol){
-                    ((IPTableProtocol) message).addNewEntriesToIPTable(Integer.parseInt(getClusterID()));
-
-
-                }*/
+                if(message instanceof IPTableProtocol){
+                    process_IPTableMessage((IPTableProtocol)message);
+                }
                 //logger.info("IPTable Merging should happen here!");
                 break;
             case FILETABLE:
@@ -193,6 +188,15 @@ public class Client extends Node {
     }
 
     /**
+     * Process the IPTABLE Message
+     *
+     * @param message
+     */
+    private void process_IPTableMessage(IPTableProtocol message) {
+        ((IPTableProtocol) message).mergeIPTables(getIpTable(), this.clusterID);
+    }
+
+    /**
      * Process the Join Message
      *
      * @param message
@@ -204,18 +208,25 @@ public class Client extends Node {
             String ipAddress = message.getIpAddress();
             int port = message.getPort();
 
-            if (!this.getIpTable().isEmpty()) {
-                IPTableProtocol ipMessage = new IPTableProtocol(ipAddress, port,
-                        this.getClusterID(), this.getIpTable());
-
-                outBuffer.add(new DispatchMessage(ipMessage.toString(), ipMessage.getIpAddress(), ipMessage.getPort()));
-                logger.info("Sending IPTables ...: " + ipMessage.toString());
-            }
-
             //adds the new node to the IPTable
             TableEntry entry = new TableEntry(message.getIpAddress(),String.valueOf(message.getPort()),
                     String.valueOf(message.getClusterID()));
             this.getIpTable().addTableEntry(entry);
+
+            if (!this.getIpTable().isEmpty()) {
+                IPTableProtocol ipMessage = new IPTableProtocol(ipAddress, port, clusterID,
+                        getIpAddress(), getPort(), getClusterID(), getIpTable());
+                for (Iterator<TableEntry> iterator = getIpTable().getEntries().iterator(); iterator.hasNext();) {
+                    TableEntry tableEntry=iterator.next();
+                    if(Integer.parseInt(tableEntry.getClusterID())==getClusterID()){
+                        outBuffer.add(new DispatchMessage(ipMessage.toString(),
+                                tableEntry.getIpAddress(), Integer.parseInt(tableEntry.getPort())));
+                        logger.info("Sending IPTables ...: " + ipMessage.toString());
+                    }
+                }
+
+            }
+
 
             //TODO Send the file table here
 
