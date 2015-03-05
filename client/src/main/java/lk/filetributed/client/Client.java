@@ -28,7 +28,7 @@ public class Client extends Node {
 
     private static final String CLIENT_IP = "127.0.0.1";
     private static final int CLIENT_PORT = 9886;
-    private static final String USERNAME = "24332sa";
+    private static final String USERNAME = "6666";
     private static final int NO_CLUSTERS = 3;
 
     private static final String[] FILE_NAMES = {"Adventures of Tintin", "Jack and Jill"};
@@ -126,12 +126,6 @@ public class Client extends Node {
 
         //generating the join message
         sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
-
-
-//        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
-//        String fileTableMSG = fileTableProtocol.toString();
-//
-//        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
 
 
     }
@@ -250,6 +244,15 @@ public class Client extends Node {
         String JOIN_MSG = joinProtocol.toString();
 
         outBuffer.add(new DispatchMessage(JOIN_MSG, RECIEVED_IP, RECIEVED_PORT));
+
+    }
+
+    public void sendMyFileTable(String RECIEVED_IP, int RECIEVED_PORT) {
+
+        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
+        String fileTableMSG = fileTableProtocol.toString();
+
+        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
 
     }
 
