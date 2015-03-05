@@ -11,10 +11,14 @@ public class QueryBot implements Runnable {
     private static Logger logger = Logger.getLogger(QueryBot.class);
 
     private MessageOutBuffer outBuffer;
+    private String ipaddress;
+    private int port;
 
 
-    public QueryBot() {
+    public QueryBot(String ipaddress,int port) {
         outBuffer = MessageOutBuffer.getInstance();
+        this.ipaddress = ipaddress;
+        this.port = port;
     }
 
     @Override
@@ -23,10 +27,9 @@ public class QueryBot implements Runnable {
         String query = "";
         while (i > 0) {
             query = getRandomQuery();
-            String ipaddress = "127.0.0.1";
-            int port = 9888;
-            QueryProtocol queryMessage = new QueryProtocol(ipaddress, port, 2, query);
+            QueryProtocol queryMessage = new QueryProtocol("127.0.0.2", port, 2, query);
             outBuffer.add(new DispatchMessage(queryMessage.toString(),ipaddress,port));
+            logger.info("Sending query: "+queryMessage.toString());
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {

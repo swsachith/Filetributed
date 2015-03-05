@@ -40,6 +40,7 @@ public class QueryProtocol extends MessageProtocol {
         this.noOfHops = Integer.parseInt(receivedMessage[3]);
         this.ipAddress = receivedMessage[4];
         this.port = Integer.parseInt(receivedMessage[5]);
+        this.messageType = "QUERY";
 
         // get the keywords within quotes
         List<String> keywordList = new ArrayList<String>();
