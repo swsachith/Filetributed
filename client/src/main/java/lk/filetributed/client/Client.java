@@ -16,6 +16,7 @@ import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -182,6 +183,10 @@ public class Client extends Node {
                 if (message instanceof GroupProtocol)
                     process_groupMessage((GroupProtocol) message);
                 break;
+            case QUERY:
+                if (message instanceof QueryProtocol)
+                    process_queryMessage((QueryProtocol) message);
+                break;
             default:
                 break;
         }
@@ -237,5 +242,18 @@ public class Client extends Node {
 
     }
 
+    public void process_queryMessage(QueryProtocol message) {
+        List<FileTableEntry> results = searchFile(message.getKeyword());
+
+        if(results.size()>0) {
+            // generating QueryHit message
+            String ipAddress = message.getIpAddress();
+            int port = message.getPort();
+            QueryHitProtocol queryHitMessage = new QueryHitProtocol(ipAddress, port, results);
+
+            outBuffer.add(new DispatchMessage(queryHitMessage.toString(), ipAddress, port));
+        }
+        //TODO forward this to other clusters after reducing the hop count
+    }
 
 }
