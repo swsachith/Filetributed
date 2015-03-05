@@ -9,10 +9,12 @@ import java.util.List;
 public class FileTableTester {
 
     private FileTable fileTable;
+    private FileTable fileTable2;
 
     @Before
     public void setup() {
         fileTable = new FileTable();
+        fileTable2 = new FileTable();
     }
 
     @Test
@@ -22,6 +24,16 @@ public class FileTableTester {
         Assert.assertEquals(1,results.size());
         results = fileTable.searchTable("American");
         Assert.assertEquals(2,results.size());
+
+        int originalSizeTable1=fileTable.getEntries().size();
+        int originalSizeTable2=fileTable2.getEntries().size();
+
+        fileTable.mergeEntriesFromTable(fileTable2);
+        Assert.assertEquals(originalSizeTable1+originalSizeTable2,fileTable.getEntries().size());
+
+        fileTable.mergeEntriesFromTable(fileTable2);
+        Assert.assertEquals(originalSizeTable1+originalSizeTable2,fileTable.getEntries().size());
+
     }
 
     private void generateDummyData() {
@@ -41,5 +53,20 @@ public class FileTableTester {
         fileTable.addTableEntry(fileTableEntry4);
         fileTable.addTableEntry(fileTableEntry5);
         fileTable.addTableEntry(fileTableEntry6);
+
+        FileTableEntry fileTableEntry7 = new FileTableEntry("Song of Ice and Fire", IP, port);
+        FileTableEntry fileTableEntry8 = new FileTableEntry("The God Delusion", IP, port);
+        FileTableEntry fileTableEntry9 = new FileTableEntry("the War and Peace", IP, port);
+        FileTableEntry fileTableEntry10 = new FileTableEntry("The theory of Everything", IP, port);
+        FileTableEntry fileTableEntry11 = new FileTableEntry("Fifty shades of gray", IP, port);
+        FileTableEntry fileTableEntry12 = new FileTableEntry("House of Cards", IP, port);
+
+
+        fileTable2.addTableEntry(fileTableEntry7);
+        fileTable2.addTableEntry(fileTableEntry8);
+        fileTable2.addTableEntry(fileTableEntry9);
+        fileTable2.addTableEntry(fileTableEntry10);
+        fileTable2.addTableEntry(fileTableEntry11);
+        fileTable2.addTableEntry(fileTableEntry12);
     }
 }
