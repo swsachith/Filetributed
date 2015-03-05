@@ -38,12 +38,14 @@ public class Client extends Node {
     private MessageOutBuffer outBuffer;
 
     public Client() {
-        configClient("client/config/client1.xml");
+        configClient("client/config/client3.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
         super.NO_CLUSTERS=NO_CLUSTERS;
         super.setCluster();
+        super.ipTable.setSelf(new TableEntry(CLIENT_IP, String.valueOf(CLIENT_PORT),
+                String.valueOf(getClusterID())));
 
         messageBuffer = MessageBuffer.getInstance();
         outBuffer = MessageOutBuffer.getInstance();

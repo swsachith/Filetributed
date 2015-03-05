@@ -16,7 +16,7 @@ public class Node {
         this.ipAddress = ipAddress;
         this.port = port;
         NO_CLUSTERS = clusters;
-        this.ipTable = new IPTable();
+        this.ipTable = new IPTable(ipAddress, port, clusters);
         this.fileTable = new FileTable();
         setCluster();
     }

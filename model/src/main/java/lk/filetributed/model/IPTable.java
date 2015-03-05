@@ -4,8 +4,14 @@ import java.util.*;
 
 public class IPTable {
     List<TableEntry> entries;
+    TableEntry self;
 
     public IPTable() {
+        entries = new LinkedList<TableEntry>();
+    }
+
+    public IPTable(String ipAddress, int port, int clusterID){
+        self= new TableEntry(ipAddress, String.valueOf(port), String.valueOf(clusterID));
         entries = new LinkedList<TableEntry>();
     }
 
@@ -19,7 +25,8 @@ public class IPTable {
             if (entry.equals(newEntry))
                 return;
         }
-        entries.add(newEntry);
+        if(!newEntry.equals(self))
+            entries.add(newEntry);
     }
 
     public TableEntry searchClusterID(String clusterid) {
@@ -43,6 +50,7 @@ public class IPTable {
         return "#"+entrylist;
     }
 
+
     public void setEntries(String entrylist, int clusterID) {
         String[] entries = entrylist.trim().split(" ");
         TableEntry newEntry;
@@ -55,7 +63,7 @@ public class IPTable {
             }
             if(searchClusterID(data[2])==null){
                 newEntry = new TableEntry(entry.split(":")[0],entry.split(":")[1],entry.split(":")[2]);
-                this.entries.add(newEntry);
+                addTableEntry(newEntry);
             }
         }
     }
@@ -72,5 +80,13 @@ public class IPTable {
 
     public boolean isEmpty() {
         return (entries.size() == 0) ? true : false;
+    }
+
+    public TableEntry getSelf() {
+        return self;
+    }
+
+    public void setSelf(TableEntry self) {
+        this.self = self;
     }
 }
