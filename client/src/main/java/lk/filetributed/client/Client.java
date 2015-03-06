@@ -38,7 +38,7 @@ public class Client extends Node {
     private MessageOutBuffer outBuffer;
 
     public Client() {
-        configClient("client/config/client3.xml");
+        configClient("client/config/client2.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -191,6 +191,8 @@ public class Client extends Node {
      */
     private void process_IPTableMessage(IPTableProtocol message) {
         ((IPTableProtocol) message).mergeIPTables(getIpTable(), this.clusterID);
+        logger.info("IP : "+getIpAddress()+" PORT : "+getPort()+
+                " IPTABLE : "+getIpTable().toString());
     }
 
     /**
@@ -223,8 +225,6 @@ public class Client extends Node {
                 }
 
             }
-
-
             //TODO Send the file table here
 
             //If not in the same cluster
@@ -241,6 +241,8 @@ public class Client extends Node {
                 outBuffer.add(new DispatchMessage(groupMessage.toString(), ipAddress, port));
             }
         }
+        logger.info("IP : "+getIpAddress()+" PORT : "+getPort()+
+                " IPTABLE : "+getIpTable().toString());
 
     }
 
