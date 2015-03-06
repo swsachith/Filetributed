@@ -105,31 +105,8 @@ public class Client extends Node {
         }
 
         int no_nodes = Integer.parseInt(response_data[2]);
+        selectProcessType(no_nodes, response_data);
 
-
-        switch (no_nodes) {
-            case 0:
-                process();
-                break;
-            case 1:
-                process(response_data[3], Integer.parseInt(response_data[4]));
-                break;
-            case 2: case 3: case 4:
-                process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
-                break;
-            case 9999:
-                System.out.println("failed, there is some error in the command");
-                break;
-            case 9998:
-                System.out.println("failed, already registered to you, unregister first");
-                break;
-            case 9997:
-                System.out.println("failed, registered to another user, try a different IP and port");
-                break;
-            case 9996:
-                System.out.println("failed, can’t register. BS full.");
-                break;
-        }
         while (true) {
             processBuffer();
         }
@@ -324,6 +301,34 @@ public class Client extends Node {
 
 
 
+    }
+
+    public void selectProcessType(int no_nodes, String[] response_data) throws IOException {
+        switch (no_nodes) {
+            case 0:
+                process();
+                break;
+            case 1:
+                process(response_data[3], Integer.parseInt(response_data[4]));
+                break;
+            case 2:
+            case 3:
+            case 4:
+                process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
+                break;
+            case 9999:
+                System.out.println("failed, there is some error in the command");
+                break;
+            case 9998:
+                System.out.println("failed, already registered to you, unregister first");
+                break;
+            case 9997:
+                System.out.println("failed, registered to another user, try a different IP and port");
+                break;
+            case 9996:
+                System.out.println("failed, can’t register. BS full.");
+                break;
+        }
     }
 
 }
