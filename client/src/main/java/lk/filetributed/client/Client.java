@@ -127,6 +127,9 @@ public class Client extends Node {
         //generating the join message
         sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
 
+        //add dummy entry to sentJoins in order to keep track of sent joins in standard form
+        sentJoins.add(new TableEntry("0.0.0.0","0000","0"));
+
 
     }
 
@@ -191,8 +194,13 @@ public class Client extends Node {
 
         //check if this is the reply to JOIN
         TableEntry entry = new TableEntry(message.getIpAddress(),message.getPort()+"",Utils.getClusterID(message.getIpAddress(),message.getPort(),NO_CLUSTERS)+"");
-        if(sentJoins.contains(entry)){
+        if(sentJoins.contains(entry) && this.getClusterID()==message.getClusterID()){
             sentJoins.remove(entry);
+
+            // if fileTable has already merged with one node in the same cluster, no need to distribute fileTable again
+            if (sentJoins.isEmpty()){
+                return;
+            }
 
             //send my filetable to all nodes in the same cluster
             if (!this.getIpTable().isEmpty()) {
@@ -210,13 +218,13 @@ public class Client extends Node {
             }
 
             fileTable.mergeEntriesFromTable(receivedFileTable);
-            logger.info("File Table merged");
+            logger.info("File Table merged using the table sent by "+message.getIpAddress()+":"+message.getPort());
         }
 
         else {
 
             fileTable.mergeEntriesFromTable(receivedFileTable);
-            logger.info("File Table merged");
+            logger.info("File Table merged using distributed table by "+message.getIpAddress()+":"+message.getPort());
         }
 
     }
