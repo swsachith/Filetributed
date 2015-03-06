@@ -2,6 +2,9 @@ package lk.filetributed.model;
 
 import lk.filetributed.util.Utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Node {
 
     protected int NO_CLUSTERS;
@@ -11,8 +14,10 @@ public class Node {
     protected int clusterID;
     protected IPTable ipTable;
     protected FileTable fileTable;
+    protected Set<TableEntry> sentJoins;
 
     public Node(String ipAddress, int port,int clusters) {
+        sentJoins= new HashSet<TableEntry>();
         this.ipAddress = ipAddress;
         this.port = port;
         NO_CLUSTERS = clusters;
@@ -21,6 +26,7 @@ public class Node {
         setCluster();
     }
     public Node(){
+        sentJoins= new HashSet<TableEntry>();
         this.ipTable = new IPTable();
         this.fileTable = new FileTable();
     }

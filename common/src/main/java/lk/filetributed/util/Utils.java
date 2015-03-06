@@ -47,6 +47,7 @@ public class Utils {
              String line = null;
 
                 while ((line = br.readLine()) != null) {
+                    line=line.replaceAll(";"," ").replaceAll(":"," ");
                     list.add(line.trim());
                 }
 

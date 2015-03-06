@@ -38,7 +38,7 @@ public class Client extends Node {
     private MessageOutBuffer outBuffer;
 
     public Client() {
-        configClient("client/config/client2.xml");
+        configClient("client/config/client3.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -168,7 +168,9 @@ public class Client extends Node {
                 //logger.info("IPTable Merging should happen here!");
                 break;
             case FILETABLE:
-                System.out.println("#######" + message.toString());
+                if(message instanceof FileTableProtocol){
+                    processFileTableMessage((FileTableProtocol) message);
+                }
                 break;
             case GROUP:
                 if (message instanceof GroupProtocol)
@@ -182,6 +184,41 @@ public class Client extends Node {
                 break;
         }
         //logger.info("IP TABLE LOG @ PORT" + CLIENT_PORT + " : " + getIpTable().toString());
+    }
+
+    private void processFileTableMessage(FileTableProtocol message) {
+        FileTable receivedFileTable= message.getFileTable();
+
+        //check if this is the reply to JOIN
+        TableEntry entry = new TableEntry(message.getIpAddress(),message.getPort()+"",Utils.getClusterID(message.getIpAddress(),message.getPort(),NO_CLUSTERS)+"");
+        if(sentJoins.contains(entry)){
+            sentJoins.remove(entry);
+
+            //send my filetable to all nodes in the same cluster
+            if (!this.getIpTable().isEmpty()) {
+
+                logger.info("Distributing FileTable : " + fileTable.toString());
+                for (Iterator<TableEntry> iterator = getIpTable().getEntries().iterator(); iterator.hasNext();) {
+                    TableEntry tableEntry=iterator.next();
+                    if(Integer.parseInt(tableEntry.getClusterID())==getClusterID()){
+                        FileTableProtocol newMessage = new FileTableProtocol(getIpAddress(),getPort(),fileTable);
+                        outBuffer.add(new DispatchMessage(newMessage.toString(),
+                                tableEntry.getIpAddress(), Integer.parseInt(tableEntry.getPort())));
+                        }
+                }
+
+            }
+
+            fileTable.mergeEntriesFromTable(receivedFileTable);
+            logger.info("File Table merged");
+        }
+
+        else {
+
+            fileTable.mergeEntriesFromTable(receivedFileTable);
+            logger.info("File Table merged");
+        }
+
     }
 
     /**
@@ -225,7 +262,9 @@ public class Client extends Node {
                 }
 
             }
-            //TODO Send the file table here
+
+            sendMyFileTable(message.getIpAddress(),message.getPort());
+            logger.info("Sending FileTable to new Node : " + message.getIpAddress()+":"+message.getPort()+"  "+fileTable.toString());
 
             //If not in the same cluster
         } else {
@@ -255,6 +294,7 @@ public class Client extends Node {
     }
 
     public void sendJoinMessage(String RECIEVED_IP, int RECIEVED_PORT) {
+        sentJoins.add(new TableEntry(RECIEVED_IP,RECIEVED_PORT+"",Utils.getClusterID(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS)+""));
         //generating the join message
         JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
         String JOIN_MSG = joinProtocol.toString();

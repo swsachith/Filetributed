@@ -80,4 +80,8 @@ public class FileTableProtocol extends MessageProtocol {
     public String getMessageID() {
         return messageID;
     }
+
+    public FileTable getFileTable() {
+        return table;
+    }
 }
