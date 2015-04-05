@@ -45,7 +45,7 @@ public class BootstrapConnector {
                 try {
                     client.close();
                 } catch (IOException e) {
-                    logger.error("Error occured in closing the connection with the Bootsrap server .."+e.getStackTrace());
+                    logger.error("Error occured in closing the connection with the Bootsrap server .."+e.getMessage());
                 }
         }
         return null;

@@ -60,7 +60,7 @@ public class UDPServer extends Thread {
 //                        new DatagramPacket(sendData, sendData.length, IPAddress, port);
 //                serverSocket.send(sendPacket);
             } catch (IOException e) {
-                logger.error("Error receiving the UDP packet ..."+e.getStackTrace());
+                logger.error("Error receiving the UDP packet ..."+e.getMessage());
             }
 
         }
