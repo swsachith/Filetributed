@@ -1,5 +1,6 @@
 package lk.filetributed.client;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lk.filetributed.dispatcher.MessageBuffer;
 import lk.filetributed.dispatcher.MessageDispatcher;
 import lk.filetributed.dispatcher.MessageOutBuffer;
@@ -92,6 +93,7 @@ public class Client extends Node {
         return this.fileTable.searchTable(filename);
     }
 
+    @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
     public static void main(String[] args) {
         Client client = new Client();
     }
@@ -120,7 +122,6 @@ public class Client extends Node {
         int clusterID;
 
         clusterID = Utils.getClusterID(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
-        Node node = new Node(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
 
         getIpTable().addTableEntry(new TableEntry(RECIEVED_IP, RECIEVED_PORT + "", clusterID + ""));
 
@@ -138,7 +139,6 @@ public class Client extends Node {
         int clusterID02;
 
         clusterID01 = Utils.getClusterID(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
-        Node node01 = new Node(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
 
         getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_01, RECIEVED_PORT_01 + "", clusterID01 + ""));
 
@@ -146,7 +146,6 @@ public class Client extends Node {
         sendJoinMessage(RECIEVED_IP_01, RECIEVED_PORT_01);
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
-        Node node02 = new Node(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
 
         getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_02, RECIEVED_PORT_02 + "", clusterID02 + ""));
 
@@ -341,7 +340,7 @@ public class Client extends Node {
                 for (TableEntry entry : ipTable) {
                     // send QUERY message to other clusters
                     // FIXME filter out the query source's cluster before forwarding
-                    if(!entry.getClusterID().equals(clusterID)) {
+                    if(!entry.getClusterID().equals(String.valueOf(clusterID))) {
                         outBuffer.add(new DispatchMessage(message.toString(),entry.getIpAddress(),
                                 Integer.parseInt(entry.getPort())));
                     }
