@@ -35,7 +35,7 @@ public class Client extends Node implements services.Iface {
 
 
     public Client() {
-        configClient("client/config/client4.xml");
+        configClient("client/config/client1.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -54,6 +54,9 @@ public class Client extends Node implements services.Iface {
         }
         initFileTable(FILE_NAMES);
         initialize();
+
+        Thread t_queryThread = new Thread(new QueryThread(this));
+        t_queryThread.start();
     }
 
     //connect with the system
@@ -273,12 +276,75 @@ public class Client extends Node implements services.Iface {
     }
 
     @Override
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException {
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException {
         return null;
     }
 
     @Override
-    public searchResponse searchFile(String fileName) throws TException {
+    public searchResponse searchFile(String keyword, int hopCount) throws TException {
+
+        if (hopCount<=0){
+            return null;
+        }
+        String result = "";
+        List<FileTableEntry> resultEntries;
+
+        resultEntries = this.fileTable.searchTable(keyword);
+        if (resultEntries!=null){
+
+            for (FileTableEntry entry : resultEntries){
+                result+=entry.toString()+";";
+            }
+            return new searchResponse(result);
+        }else {
+
+            for (TableEntry entry : this.ipTable.getEntries()){
+                if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
+                    invokeSearch(entry.getIpAddress(),Integer.parseInt(entry.getPort()),keyword,hopCount-1);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public FileTable invokeSearch(String keyword,int hopCount){
+        return invokeSearch(this.ipAddress,this.port,keyword,hopCount);
+    }
+
+    private FileTable invokeSearch(String in_ipAddr, int in_port, String keyword,int hopCount) {
+
+        TTransport transport;
+        try {
+            transport = new TSocket(in_ipAddr, in_port);
+            transport.open();
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            services.Client client = new services.Client(protocol);
+
+            logger.info("invoke search on " + in_ipAddr + " : " + in_port);
+
+            searchResponse searchResponse = client.searchFile(keyword, hopCount);
+            transport.close();
+
+            FileTable resultTable = new FileTable();
+            String result = searchResponse.getResult();
+            if (result.contains(";")){
+                String[] entriesStr = result.split(";");
+                for (String s : entriesStr){
+                    String[] split = s.split(":");
+                    resultTable.addTableEntry(new FileTableEntry(split[0],split[1], Integer.parseInt(split[2])));
+                }
+                return resultTable;
+            }else {
+                return null;
+            }
+
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
 
         return null;
     }
@@ -449,4 +515,7 @@ public class Client extends Node implements services.Iface {
         }
     }
 
+    public void leaveInvoked() {
+        System.exit(0);
+    }
 }
