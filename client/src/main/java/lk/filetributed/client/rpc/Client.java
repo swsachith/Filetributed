@@ -2,6 +2,7 @@ package lk.filetributed.client.rpc;
 
 import lk.filetributed.client.BootstrapConnector;
 import lk.filetributed.client.rpc.services.JoinNode;
+import lk.filetributed.client.rpc.services.iptable;
 import lk.filetributed.model.*;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,7 +23,7 @@ public class Client extends Node implements JoinNode.Iface {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "127.0.0.1";
+    private static final String SERVER_NAME = "192.168.1.6";
     private static final int PORT = 9889;
 
     private static String CLIENT_IP;
@@ -33,7 +35,7 @@ public class Client extends Node implements JoinNode.Iface {
 
 
     public Client() {
-        configClient("client/config/client2.xml");
+        configClient("client/config/client1.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -152,7 +154,7 @@ public class Client extends Node implements JoinNode.Iface {
             JoinNode.Client client = new JoinNode.Client(protocol);
 
             System.out.println("sending join request...");
-            String s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
+            iptable s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP, CLIENT_PORT, NO_CLUSTERS));
             System.out.println(s);
             transport.close();
 
@@ -164,11 +166,17 @@ public class Client extends Node implements JoinNode.Iface {
     }
 
     @Override
-    public String joinRequest(String ipAddress, int port, int clusterID) throws TException {
+    public iptable joinRequest(String ipAddress, int port, int clusterID) throws TException {
+        iptable data;
         System.out.println("join request came from "+ipAddress+" : "+port);
         System.out.println("setting iptable...");
 
-        return "success yakoo";
+        data = new iptable();
+        data.setMyIP(ipAddress);
+        data.setMyPort(port);
+        data.setMyClusterID(clusterID);
+        data.setEntries(this.getIpTable().toString());
+        return data;
     }
 
 //    public void processBuffer() {
