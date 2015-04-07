@@ -40,8 +40,7 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
 
   private static final org.apache.thrift.protocol.TField MY_IP_FIELD_DESC = new org.apache.thrift.protocol.TField("myIP", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField MY_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("myPort", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField MY_CLUSTER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("myClusterID", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField ENTRIES_FIELD_DESC = new org.apache.thrift.protocol.TField("entries", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField ENTRIES_FIELD_DESC = new org.apache.thrift.protocol.TField("entries", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -51,15 +50,13 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
 
   public String myIP; // required
   public int myPort; // required
-  public int myClusterID; // required
   public String entries; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     MY_IP((short)1, "myIP"),
     MY_PORT((short)2, "myPort"),
-    MY_CLUSTER_ID((short)3, "myClusterID"),
-    ENTRIES((short)4, "entries");
+    ENTRIES((short)3, "entries");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -78,9 +75,7 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
           return MY_IP;
         case 2: // MY_PORT
           return MY_PORT;
-        case 3: // MY_CLUSTER_ID
-          return MY_CLUSTER_ID;
-        case 4: // ENTRIES
+        case 3: // ENTRIES
           return ENTRIES;
         default:
           return null;
@@ -123,7 +118,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
 
   // isset id assignments
   private static final int __MYPORT_ISSET_ID = 0;
-  private static final int __MYCLUSTERID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -131,8 +125,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     tmpMap.put(_Fields.MY_IP, new org.apache.thrift.meta_data.FieldMetaData("myIP", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.MY_PORT, new org.apache.thrift.meta_data.FieldMetaData("myPort", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.MY_CLUSTER_ID, new org.apache.thrift.meta_data.FieldMetaData("myClusterID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.ENTRIES, new org.apache.thrift.meta_data.FieldMetaData("entries", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -146,15 +138,12 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
   public messageProtocol(
     String myIP,
     int myPort,
-    int myClusterID,
     String entries)
   {
     this();
     this.myIP = myIP;
     this.myPort = myPort;
     setMyPortIsSet(true);
-    this.myClusterID = myClusterID;
-    setMyClusterIDIsSet(true);
     this.entries = entries;
   }
 
@@ -167,7 +156,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
       this.myIP = other.myIP;
     }
     this.myPort = other.myPort;
-    this.myClusterID = other.myClusterID;
     if (other.isSetEntries()) {
       this.entries = other.entries;
     }
@@ -182,8 +170,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     this.myIP = null;
     setMyPortIsSet(false);
     this.myPort = 0;
-    setMyClusterIDIsSet(false);
-    this.myClusterID = 0;
     this.entries = null;
   }
 
@@ -234,29 +220,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MYPORT_ISSET_ID, value);
   }
 
-  public int getMyClusterID() {
-    return this.myClusterID;
-  }
-
-  public messageProtocol setMyClusterID(int myClusterID) {
-    this.myClusterID = myClusterID;
-    setMyClusterIDIsSet(true);
-    return this;
-  }
-
-  public void unsetMyClusterID() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MYCLUSTERID_ISSET_ID);
-  }
-
-  /** Returns true if field myClusterID is set (has been assigned a value) and false otherwise */
-  public boolean isSetMyClusterID() {
-    return EncodingUtils.testBit(__isset_bitfield, __MYCLUSTERID_ISSET_ID);
-  }
-
-  public void setMyClusterIDIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MYCLUSTERID_ISSET_ID, value);
-  }
-
   public String getEntries() {
     return this.entries;
   }
@@ -299,14 +262,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
       }
       break;
 
-    case MY_CLUSTER_ID:
-      if (value == null) {
-        unsetMyClusterID();
-      } else {
-        setMyClusterID((Integer)value);
-      }
-      break;
-
     case ENTRIES:
       if (value == null) {
         unsetEntries();
@@ -326,9 +281,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     case MY_PORT:
       return Integer.valueOf(getMyPort());
 
-    case MY_CLUSTER_ID:
-      return Integer.valueOf(getMyClusterID());
-
     case ENTRIES:
       return getEntries();
 
@@ -347,8 +299,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
       return isSetMyIP();
     case MY_PORT:
       return isSetMyPort();
-    case MY_CLUSTER_ID:
-      return isSetMyClusterID();
     case ENTRIES:
       return isSetEntries();
     }
@@ -386,15 +336,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
         return false;
     }
 
-    boolean this_present_myClusterID = true;
-    boolean that_present_myClusterID = true;
-    if (this_present_myClusterID || that_present_myClusterID) {
-      if (!(this_present_myClusterID && that_present_myClusterID))
-        return false;
-      if (this.myClusterID != that.myClusterID)
-        return false;
-    }
-
     boolean this_present_entries = true && this.isSetEntries();
     boolean that_present_entries = true && that.isSetEntries();
     if (this_present_entries || that_present_entries) {
@@ -420,11 +361,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     list.add(present_myPort);
     if (present_myPort)
       list.add(myPort);
-
-    boolean present_myClusterID = true;
-    list.add(present_myClusterID);
-    if (present_myClusterID)
-      list.add(myClusterID);
 
     boolean present_entries = true && (isSetEntries());
     list.add(present_entries);
@@ -458,16 +394,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     }
     if (isSetMyPort()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.myPort, other.myPort);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetMyClusterID()).compareTo(other.isSetMyClusterID());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetMyClusterID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.myClusterID, other.myClusterID);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -512,10 +438,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     if (!first) sb.append(", ");
     sb.append("myPort:");
     sb.append(this.myPort);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("myClusterID:");
-    sb.append(this.myClusterID);
     first = false;
     if (!first) sb.append(", ");
     sb.append("entries:");
@@ -586,15 +508,7 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // MY_CLUSTER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.myClusterID = iprot.readI32();
-              struct.setMyClusterIDIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // ENTRIES
+          case 3: // ENTRIES
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.entries = iprot.readString();
               struct.setEntriesIsSet(true);
@@ -625,9 +539,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
       oprot.writeFieldBegin(MY_PORT_FIELD_DESC);
       oprot.writeI32(struct.myPort);
       oprot.writeFieldEnd();
-      oprot.writeFieldBegin(MY_CLUSTER_ID_FIELD_DESC);
-      oprot.writeI32(struct.myClusterID);
-      oprot.writeFieldEnd();
       if (struct.entries != null) {
         oprot.writeFieldBegin(ENTRIES_FIELD_DESC);
         oprot.writeString(struct.entries);
@@ -657,21 +568,15 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
       if (struct.isSetMyPort()) {
         optionals.set(1);
       }
-      if (struct.isSetMyClusterID()) {
+      if (struct.isSetEntries()) {
         optionals.set(2);
       }
-      if (struct.isSetEntries()) {
-        optionals.set(3);
-      }
-      oprot.writeBitSet(optionals, 4);
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetMyIP()) {
         oprot.writeString(struct.myIP);
       }
       if (struct.isSetMyPort()) {
         oprot.writeI32(struct.myPort);
-      }
-      if (struct.isSetMyClusterID()) {
-        oprot.writeI32(struct.myClusterID);
       }
       if (struct.isSetEntries()) {
         oprot.writeString(struct.entries);
@@ -681,7 +586,7 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, messageProtocol struct) throws TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.myIP = iprot.readString();
         struct.setMyIPIsSet(true);
@@ -691,10 +596,6 @@ public class messageProtocol implements org.apache.thrift.TBase<messageProtocol,
         struct.setMyPortIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.myClusterID = iprot.readI32();
-        struct.setMyClusterIDIsSet(true);
-      }
-      if (incoming.get(3)) {
         struct.entries = iprot.readString();
         struct.setEntriesIsSet(true);
       }

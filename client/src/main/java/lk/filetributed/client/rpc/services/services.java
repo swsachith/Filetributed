@@ -39,11 +39,11 @@ public class services {
 
   public interface Iface {
 
-    public messageProtocol joinRequest(String ipAddress, int port, int clusterID) throws TException;
+    public messageProtocol joinRequest(String ipAddress, int port) throws TException;
 
     public void mergeIPTable(messageProtocol ipTable) throws TException;
 
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException;
+    public messageProtocol mergeFileTable(String ipAddress, int port, String fileTableEntries) throws TException;
 
     public searchResponse searchFile(String keyword, int hopCount) throws TException;
 
@@ -51,11 +51,11 @@ public class services {
 
   public interface AsyncIface {
 
-    public void joinRequest(String ipAddress, int port, int clusterID, AsyncMethodCallback resultHandler) throws TException;
+    public void joinRequest(String ipAddress, int port, AsyncMethodCallback resultHandler) throws TException;
 
     public void mergeIPTable(messageProtocol ipTable, AsyncMethodCallback resultHandler) throws TException;
 
-    public void mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException;
+    public void mergeFileTable(String ipAddress, int port, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException;
 
     public void searchFile(String keyword, int hopCount, AsyncMethodCallback resultHandler) throws TException;
 
@@ -81,18 +81,17 @@ public class services {
       super(iprot, oprot);
     }
 
-    public messageProtocol joinRequest(String ipAddress, int port, int clusterID) throws TException
+    public messageProtocol joinRequest(String ipAddress, int port) throws TException
     {
-      send_joinRequest(ipAddress, port, clusterID);
+      send_joinRequest(ipAddress, port);
       return recv_joinRequest();
     }
 
-    public void send_joinRequest(String ipAddress, int port, int clusterID) throws TException
+    public void send_joinRequest(String ipAddress, int port) throws TException
     {
       joinRequest_args args = new joinRequest_args();
       args.setIpAddress(ipAddress);
       args.setPort(port);
-      args.setClusterID(clusterID);
       sendBase("joinRequest", args);
     }
 
@@ -126,18 +125,17 @@ public class services {
       return;
     }
 
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException
+    public messageProtocol mergeFileTable(String ipAddress, int port, String fileTableEntries) throws TException
     {
-      send_mergeFileTable(ipAddress, port, clusterID, fileTableEntries);
+      send_mergeFileTable(ipAddress, port, fileTableEntries);
       return recv_mergeFileTable();
     }
 
-    public void send_mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException
+    public void send_mergeFileTable(String ipAddress, int port, String fileTableEntries) throws TException
     {
       mergeFileTable_args args = new mergeFileTable_args();
       args.setIpAddress(ipAddress);
       args.setPort(port);
-      args.setClusterID(clusterID);
       args.setFileTableEntries(fileTableEntries);
       sendBase("mergeFileTable", args);
     }
@@ -194,9 +192,9 @@ public class services {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void joinRequest(String ipAddress, int port, int clusterID, AsyncMethodCallback resultHandler) throws TException {
+    public void joinRequest(String ipAddress, int port, AsyncMethodCallback resultHandler) throws TException {
       checkReady();
-      joinRequest_call method_call = new joinRequest_call(ipAddress, port, clusterID, resultHandler, this, ___protocolFactory, ___transport);
+      joinRequest_call method_call = new joinRequest_call(ipAddress, port, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -204,12 +202,10 @@ public class services {
     public static class joinRequest_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String ipAddress;
       private int port;
-      private int clusterID;
-      public joinRequest_call(String ipAddress, int port, int clusterID, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
+      public joinRequest_call(String ipAddress, int port, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.ipAddress = ipAddress;
         this.port = port;
-        this.clusterID = clusterID;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws TException {
@@ -217,7 +213,6 @@ public class services {
         joinRequest_args args = new joinRequest_args();
         args.setIpAddress(ipAddress);
         args.setPort(port);
-        args.setClusterID(clusterID);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -264,9 +259,9 @@ public class services {
       }
     }
 
-    public void mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException {
+    public void mergeFileTable(String ipAddress, int port, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException {
       checkReady();
-      mergeFileTable_call method_call = new mergeFileTable_call(ipAddress, port, clusterID, fileTableEntries, resultHandler, this, ___protocolFactory, ___transport);
+      mergeFileTable_call method_call = new mergeFileTable_call(ipAddress, port, fileTableEntries, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -274,13 +269,11 @@ public class services {
     public static class mergeFileTable_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String ipAddress;
       private int port;
-      private int clusterID;
       private String fileTableEntries;
-      public mergeFileTable_call(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
+      public mergeFileTable_call(String ipAddress, int port, String fileTableEntries, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.ipAddress = ipAddress;
         this.port = port;
-        this.clusterID = clusterID;
         this.fileTableEntries = fileTableEntries;
       }
 
@@ -289,7 +282,6 @@ public class services {
         mergeFileTable_args args = new mergeFileTable_args();
         args.setIpAddress(ipAddress);
         args.setPort(port);
-        args.setClusterID(clusterID);
         args.setFileTableEntries(fileTableEntries);
         args.write(prot);
         prot.writeMessageEnd();
@@ -375,7 +367,7 @@ public class services {
 
       public joinRequest_result getResult(I iface, joinRequest_args args) throws TException {
         joinRequest_result result = new joinRequest_result();
-        result.success = iface.joinRequest(args.ipAddress, args.port, args.clusterID);
+        result.success = iface.joinRequest(args.ipAddress, args.port);
         return result;
       }
     }
@@ -415,7 +407,7 @@ public class services {
 
       public mergeFileTable_result getResult(I iface, mergeFileTable_args args) throws TException {
         mergeFileTable_result result = new mergeFileTable_result();
-        result.success = iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTableEntries);
+        result.success = iface.mergeFileTable(args.ipAddress, args.port, args.fileTableEntries);
         return result;
       }
     }
@@ -507,7 +499,7 @@ public class services {
       }
 
       public void start(I iface, joinRequest_args args, AsyncMethodCallback<messageProtocol> resultHandler) throws TException {
-        iface.joinRequest(args.ipAddress, args.port, args.clusterID,resultHandler);
+        iface.joinRequest(args.ipAddress, args.port,resultHandler);
       }
     }
 
@@ -608,7 +600,7 @@ public class services {
       }
 
       public void start(I iface, mergeFileTable_args args, AsyncMethodCallback<messageProtocol> resultHandler) throws TException {
-        iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTableEntries,resultHandler);
+        iface.mergeFileTable(args.ipAddress, args.port, args.fileTableEntries,resultHandler);
       }
     }
 
@@ -670,7 +662,6 @@ public class services {
 
     private static final org.apache.thrift.protocol.TField IP_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddress", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
-    private static final org.apache.thrift.protocol.TField CLUSTER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("clusterID", org.apache.thrift.protocol.TType.I32, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -680,13 +671,11 @@ public class services {
 
     public String ipAddress; // required
     public int port; // required
-    public int clusterID; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       IP_ADDRESS((short)1, "ipAddress"),
-      PORT((short)2, "port"),
-      CLUSTER_ID((short)3, "clusterID");
+      PORT((short)2, "port");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -705,8 +694,6 @@ public class services {
             return IP_ADDRESS;
           case 2: // PORT
             return PORT;
-          case 3: // CLUSTER_ID
-            return CLUSTER_ID;
           default:
             return null;
         }
@@ -748,7 +735,6 @@ public class services {
 
     // isset id assignments
     private static final int __PORT_ISSET_ID = 0;
-    private static final int __CLUSTERID_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
@@ -756,8 +742,6 @@ public class services {
       tmpMap.put(_Fields.IP_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("ipAddress", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.CLUSTER_ID, new org.apache.thrift.meta_data.FieldMetaData("clusterID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(joinRequest_args.class, metaDataMap);
@@ -768,15 +752,12 @@ public class services {
 
     public joinRequest_args(
       String ipAddress,
-      int port,
-      int clusterID)
+      int port)
     {
       this();
       this.ipAddress = ipAddress;
       this.port = port;
       setPortIsSet(true);
-      this.clusterID = clusterID;
-      setClusterIDIsSet(true);
     }
 
     /**
@@ -788,7 +769,6 @@ public class services {
         this.ipAddress = other.ipAddress;
       }
       this.port = other.port;
-      this.clusterID = other.clusterID;
     }
 
     public joinRequest_args deepCopy() {
@@ -800,8 +780,6 @@ public class services {
       this.ipAddress = null;
       setPortIsSet(false);
       this.port = 0;
-      setClusterIDIsSet(false);
-      this.clusterID = 0;
     }
 
     public String getIpAddress() {
@@ -851,29 +829,6 @@ public class services {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
     }
 
-    public int getClusterID() {
-      return this.clusterID;
-    }
-
-    public joinRequest_args setClusterID(int clusterID) {
-      this.clusterID = clusterID;
-      setClusterIDIsSet(true);
-      return this;
-    }
-
-    public void unsetClusterID() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-    }
-
-    /** Returns true if field clusterID is set (has been assigned a value) and false otherwise */
-    public boolean isSetClusterID() {
-      return EncodingUtils.testBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-    }
-
-    public void setClusterIDIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CLUSTERID_ISSET_ID, value);
-    }
-
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case IP_ADDRESS:
@@ -892,14 +847,6 @@ public class services {
         }
         break;
 
-      case CLUSTER_ID:
-        if (value == null) {
-          unsetClusterID();
-        } else {
-          setClusterID((Integer)value);
-        }
-        break;
-
       }
     }
 
@@ -910,9 +857,6 @@ public class services {
 
       case PORT:
         return Integer.valueOf(getPort());
-
-      case CLUSTER_ID:
-        return Integer.valueOf(getClusterID());
 
       }
       throw new IllegalStateException();
@@ -929,8 +873,6 @@ public class services {
         return isSetIpAddress();
       case PORT:
         return isSetPort();
-      case CLUSTER_ID:
-        return isSetClusterID();
       }
       throw new IllegalStateException();
     }
@@ -966,15 +908,6 @@ public class services {
           return false;
       }
 
-      boolean this_present_clusterID = true;
-      boolean that_present_clusterID = true;
-      if (this_present_clusterID || that_present_clusterID) {
-        if (!(this_present_clusterID && that_present_clusterID))
-          return false;
-        if (this.clusterID != that.clusterID)
-          return false;
-      }
-
       return true;
     }
 
@@ -991,11 +924,6 @@ public class services {
       list.add(present_port);
       if (present_port)
         list.add(port);
-
-      boolean present_clusterID = true;
-      list.add(present_clusterID);
-      if (present_clusterID)
-        list.add(clusterID);
 
       return list.hashCode();
     }
@@ -1024,16 +952,6 @@ public class services {
       }
       if (isSetPort()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.port, other.port);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetClusterID()).compareTo(other.isSetClusterID());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetClusterID()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clusterID, other.clusterID);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -1068,10 +986,6 @@ public class services {
       if (!first) sb.append(", ");
       sb.append("port:");
       sb.append(this.port);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("clusterID:");
-      sb.append(this.clusterID);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -1134,14 +1048,6 @@ public class services {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // CLUSTER_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.clusterID = iprot.readI32();
-                struct.setClusterIDIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -1164,9 +1070,6 @@ public class services {
         }
         oprot.writeFieldBegin(PORT_FIELD_DESC);
         oprot.writeI32(struct.port);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(CLUSTER_ID_FIELD_DESC);
-        oprot.writeI32(struct.clusterID);
         oprot.writeFieldEnd();
         oprot.writeFieldStop();
         oprot.writeStructEnd();
@@ -1192,25 +1095,19 @@ public class services {
         if (struct.isSetPort()) {
           optionals.set(1);
         }
-        if (struct.isSetClusterID()) {
-          optionals.set(2);
-        }
-        oprot.writeBitSet(optionals, 3);
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetIpAddress()) {
           oprot.writeString(struct.ipAddress);
         }
         if (struct.isSetPort()) {
           oprot.writeI32(struct.port);
         }
-        if (struct.isSetClusterID()) {
-          oprot.writeI32(struct.clusterID);
-        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, joinRequest_args struct) throws TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.ipAddress = iprot.readString();
           struct.setIpAddressIsSet(true);
@@ -1218,10 +1115,6 @@ public class services {
         if (incoming.get(1)) {
           struct.port = iprot.readI32();
           struct.setPortIsSet(true);
-        }
-        if (incoming.get(2)) {
-          struct.clusterID = iprot.readI32();
-          struct.setClusterIDIsSet(true);
         }
       }
     }
@@ -2213,8 +2106,7 @@ public class services {
 
     private static final org.apache.thrift.protocol.TField IP_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddress", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
-    private static final org.apache.thrift.protocol.TField CLUSTER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("clusterID", org.apache.thrift.protocol.TType.I32, (short)3);
-    private static final org.apache.thrift.protocol.TField FILE_TABLE_ENTRIES_FIELD_DESC = new org.apache.thrift.protocol.TField("fileTableEntries", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField FILE_TABLE_ENTRIES_FIELD_DESC = new org.apache.thrift.protocol.TField("fileTableEntries", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2224,15 +2116,13 @@ public class services {
 
     public String ipAddress; // required
     public int port; // required
-    public int clusterID; // required
     public String fileTableEntries; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       IP_ADDRESS((short)1, "ipAddress"),
       PORT((short)2, "port"),
-      CLUSTER_ID((short)3, "clusterID"),
-      FILE_TABLE_ENTRIES((short)4, "fileTableEntries");
+      FILE_TABLE_ENTRIES((short)3, "fileTableEntries");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2251,9 +2141,7 @@ public class services {
             return IP_ADDRESS;
           case 2: // PORT
             return PORT;
-          case 3: // CLUSTER_ID
-            return CLUSTER_ID;
-          case 4: // FILE_TABLE_ENTRIES
+          case 3: // FILE_TABLE_ENTRIES
             return FILE_TABLE_ENTRIES;
           default:
             return null;
@@ -2296,7 +2184,6 @@ public class services {
 
     // isset id assignments
     private static final int __PORT_ISSET_ID = 0;
-    private static final int __CLUSTERID_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
@@ -2304,8 +2191,6 @@ public class services {
       tmpMap.put(_Fields.IP_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("ipAddress", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.CLUSTER_ID, new org.apache.thrift.meta_data.FieldMetaData("clusterID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.FILE_TABLE_ENTRIES, new org.apache.thrift.meta_data.FieldMetaData("fileTableEntries", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -2319,15 +2204,12 @@ public class services {
     public mergeFileTable_args(
       String ipAddress,
       int port,
-      int clusterID,
       String fileTableEntries)
     {
       this();
       this.ipAddress = ipAddress;
       this.port = port;
       setPortIsSet(true);
-      this.clusterID = clusterID;
-      setClusterIDIsSet(true);
       this.fileTableEntries = fileTableEntries;
     }
 
@@ -2340,7 +2222,6 @@ public class services {
         this.ipAddress = other.ipAddress;
       }
       this.port = other.port;
-      this.clusterID = other.clusterID;
       if (other.isSetFileTableEntries()) {
         this.fileTableEntries = other.fileTableEntries;
       }
@@ -2355,8 +2236,6 @@ public class services {
       this.ipAddress = null;
       setPortIsSet(false);
       this.port = 0;
-      setClusterIDIsSet(false);
-      this.clusterID = 0;
       this.fileTableEntries = null;
     }
 
@@ -2407,29 +2286,6 @@ public class services {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
     }
 
-    public int getClusterID() {
-      return this.clusterID;
-    }
-
-    public mergeFileTable_args setClusterID(int clusterID) {
-      this.clusterID = clusterID;
-      setClusterIDIsSet(true);
-      return this;
-    }
-
-    public void unsetClusterID() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-    }
-
-    /** Returns true if field clusterID is set (has been assigned a value) and false otherwise */
-    public boolean isSetClusterID() {
-      return EncodingUtils.testBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-    }
-
-    public void setClusterIDIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CLUSTERID_ISSET_ID, value);
-    }
-
     public String getFileTableEntries() {
       return this.fileTableEntries;
     }
@@ -2472,14 +2328,6 @@ public class services {
         }
         break;
 
-      case CLUSTER_ID:
-        if (value == null) {
-          unsetClusterID();
-        } else {
-          setClusterID((Integer)value);
-        }
-        break;
-
       case FILE_TABLE_ENTRIES:
         if (value == null) {
           unsetFileTableEntries();
@@ -2499,9 +2347,6 @@ public class services {
       case PORT:
         return Integer.valueOf(getPort());
 
-      case CLUSTER_ID:
-        return Integer.valueOf(getClusterID());
-
       case FILE_TABLE_ENTRIES:
         return getFileTableEntries();
 
@@ -2520,8 +2365,6 @@ public class services {
         return isSetIpAddress();
       case PORT:
         return isSetPort();
-      case CLUSTER_ID:
-        return isSetClusterID();
       case FILE_TABLE_ENTRIES:
         return isSetFileTableEntries();
       }
@@ -2559,15 +2402,6 @@ public class services {
           return false;
       }
 
-      boolean this_present_clusterID = true;
-      boolean that_present_clusterID = true;
-      if (this_present_clusterID || that_present_clusterID) {
-        if (!(this_present_clusterID && that_present_clusterID))
-          return false;
-        if (this.clusterID != that.clusterID)
-          return false;
-      }
-
       boolean this_present_fileTableEntries = true && this.isSetFileTableEntries();
       boolean that_present_fileTableEntries = true && that.isSetFileTableEntries();
       if (this_present_fileTableEntries || that_present_fileTableEntries) {
@@ -2593,11 +2427,6 @@ public class services {
       list.add(present_port);
       if (present_port)
         list.add(port);
-
-      boolean present_clusterID = true;
-      list.add(present_clusterID);
-      if (present_clusterID)
-        list.add(clusterID);
 
       boolean present_fileTableEntries = true && (isSetFileTableEntries());
       list.add(present_fileTableEntries);
@@ -2631,16 +2460,6 @@ public class services {
       }
       if (isSetPort()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.port, other.port);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetClusterID()).compareTo(other.isSetClusterID());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetClusterID()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clusterID, other.clusterID);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2685,10 +2504,6 @@ public class services {
       if (!first) sb.append(", ");
       sb.append("port:");
       sb.append(this.port);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("clusterID:");
-      sb.append(this.clusterID);
       first = false;
       if (!first) sb.append(", ");
       sb.append("fileTableEntries:");
@@ -2759,15 +2574,7 @@ public class services {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // CLUSTER_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.clusterID = iprot.readI32();
-                struct.setClusterIDIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // FILE_TABLE_ENTRIES
+            case 3: // FILE_TABLE_ENTRIES
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.fileTableEntries = iprot.readString();
                 struct.setFileTableEntriesIsSet(true);
@@ -2798,9 +2605,6 @@ public class services {
         oprot.writeFieldBegin(PORT_FIELD_DESC);
         oprot.writeI32(struct.port);
         oprot.writeFieldEnd();
-        oprot.writeFieldBegin(CLUSTER_ID_FIELD_DESC);
-        oprot.writeI32(struct.clusterID);
-        oprot.writeFieldEnd();
         if (struct.fileTableEntries != null) {
           oprot.writeFieldBegin(FILE_TABLE_ENTRIES_FIELD_DESC);
           oprot.writeString(struct.fileTableEntries);
@@ -2830,21 +2634,15 @@ public class services {
         if (struct.isSetPort()) {
           optionals.set(1);
         }
-        if (struct.isSetClusterID()) {
+        if (struct.isSetFileTableEntries()) {
           optionals.set(2);
         }
-        if (struct.isSetFileTableEntries()) {
-          optionals.set(3);
-        }
-        oprot.writeBitSet(optionals, 4);
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetIpAddress()) {
           oprot.writeString(struct.ipAddress);
         }
         if (struct.isSetPort()) {
           oprot.writeI32(struct.port);
-        }
-        if (struct.isSetClusterID()) {
-          oprot.writeI32(struct.clusterID);
         }
         if (struct.isSetFileTableEntries()) {
           oprot.writeString(struct.fileTableEntries);
@@ -2854,7 +2652,7 @@ public class services {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, mergeFileTable_args struct) throws TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.ipAddress = iprot.readString();
           struct.setIpAddressIsSet(true);
@@ -2864,10 +2662,6 @@ public class services {
           struct.setPortIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.clusterID = iprot.readI32();
-          struct.setClusterIDIsSet(true);
-        }
-        if (incoming.get(3)) {
           struct.fileTableEntries = iprot.readString();
           struct.setFileTableEntriesIsSet(true);
         }

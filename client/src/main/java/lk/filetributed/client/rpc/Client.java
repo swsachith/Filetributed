@@ -43,6 +43,7 @@ public class Client extends Node implements services.Iface {
         super.port=CLIENT_PORT;
         super.NO_CLUSTERS=NO_CLUSTERS;
         super.setCluster();
+        logger.info("Cluster id : "+clusterID);
         super.ipTable.setSelf(new TableEntry(CLIENT_IP, String.valueOf(CLIENT_PORT),
                 String.valueOf(getClusterID())));
 
@@ -130,11 +131,10 @@ public class Client extends Node implements services.Iface {
         logger.info("#  my file table "+ this.fileTable.getEntries().toString());
         if (inc_fileTable!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable);
+            logger.info("##  received file table "+ inc_fileTable.getEntries().toString());
+            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
         }
 
-        logger.info("##  received file table "+ inc_fileTable.getEntries().toString());
-
-        logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
 
     }
 
@@ -160,6 +160,7 @@ public class Client extends Node implements services.Iface {
         logger.info("#  my file table "+ this.fileTable.getEntries().toString());
         if (inc_fileTable1!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable1);
+            logger.info("##  received iptable 1"+ inc_ipTable1.getEntries().toString());
         }
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
@@ -174,14 +175,22 @@ public class Client extends Node implements services.Iface {
             for (TableEntry entry : inc_ipTable2.getEntries()){
                 this.ipTable.addTableEntry(entry);
             }
+            logger.info("##  received iptable 2"+ inc_ipTable2.getEntries().toString());
         }
 
-        logger.info("##  received iptable 1"+ inc_ipTable1.getEntries().toString());
-        logger.info("##  received iptable 2"+ inc_ipTable2.getEntries().toString());
+
+
 
         FileTable inc_fileTable2 = sendFileTable(receivedNode2);
-        logger.info("##  received file table 1 "+ inc_fileTable1.getEntries().toString());
-        logger.info("##  received file table 2 "+ inc_fileTable2.getEntries().toString());
+
+        if (inc_fileTable1!=null){
+            logger.info("##  received file table 1 "+ inc_fileTable1.getEntries().toString());
+        }
+        if (inc_fileTable2!=null){
+            logger.info("##  received file table 2 "+ inc_fileTable2.getEntries().toString());
+        }
+
+
         if (inc_fileTable1!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable2);
         }
@@ -190,7 +199,7 @@ public class Client extends Node implements services.Iface {
 
     }
 
-    private IPTable sendJoin(Node receivedNode ){
+    synchronized private IPTable sendJoin(Node receivedNode ){
         TTransport transport;
         try {
             transport = new TSocket(receivedNode.getIpAddress(), receivedNode.getPort());
@@ -200,13 +209,17 @@ public class Client extends Node implements services.Iface {
             services.Client client = new services.Client(protocol);
 
             logger.info("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
-            messageProtocol recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
+            messageProtocol recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT);
             transport.close();
 
-            IPTable ipTableToJoin = new IPTable(recvd_ipTable.getMyIP(),recvd_ipTable.getMyPort(),recvd_ipTable.myClusterID);
-            ipTableToJoin.setEntries(recvd_ipTable.entries,recvd_ipTable.myClusterID);
+            if(recvd_ipTable.getMyIP()!=null) {
+                int myClusterID_m = Utils.getClusterID(recvd_ipTable.getMyIP(), recvd_ipTable.getMyPort(), NO_CLUSTERS);
+                IPTable ipTableToJoin = new IPTable(recvd_ipTable.getMyIP(), recvd_ipTable.getMyPort(), myClusterID_m);
+                ipTableToJoin.setEntries(recvd_ipTable.entries, myClusterID_m);
+                return ipTableToJoin;
+            }
 
-            return ipTableToJoin;
+            return null;
 
         } catch (TTransportException e) {
             e.printStackTrace();
@@ -216,7 +229,7 @@ public class Client extends Node implements services.Iface {
         return null;
     }
 
-    private FileTable sendFileTable(Node receivedNode){
+    synchronized private FileTable sendFileTable(Node receivedNode){
         TTransport transport;
         try {
             transport = new TSocket(receivedNode.getIpAddress(), receivedNode.getPort());
@@ -227,16 +240,20 @@ public class Client extends Node implements services.Iface {
 
             logger.info("Sending file table to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
 
-            messageProtocol recvd_fileTable = client.mergeFileTable(CLIENT_IP, CLIENT_PORT, this.getClusterID(), this.getFileTable().toString());
+            messageProtocol recvd_fileTable = client.mergeFileTable(CLIENT_IP, CLIENT_PORT, this.getFileTable().toString());
             transport.close();
 
-            FileTable fileTableToJoin = new FileTable();
-            LinkedList<FileTableEntry> entryList = (LinkedList<FileTableEntry>) fileTableToJoin.toList(recvd_fileTable.getEntries());
-            for (Iterator<FileTableEntry> iterator = entryList.iterator(); iterator.hasNext();) {
-                fileTableToJoin.addTableEntry(iterator.next());
+            if (recvd_fileTable.getMyIP()!=null) {
+                FileTable fileTableToJoin = new FileTable();
+                LinkedList<FileTableEntry> entryList = (LinkedList<FileTableEntry>) fileTableToJoin.toList(recvd_fileTable.getEntries());
+                for (Iterator<FileTableEntry> iterator = entryList.iterator(); iterator.hasNext(); ) {
+                    fileTableToJoin.addTableEntry(iterator.next());
+                }
+
+                return fileTableToJoin;
             }
 
-            return fileTableToJoin;
+            return null;
 
         } catch (TTransportException e) {
             e.printStackTrace();
@@ -246,7 +263,7 @@ public class Client extends Node implements services.Iface {
         return null;
     }
     @Override
-    public messageProtocol mergeFileTable(String inc_ipAddress, int inc_port, int inc_clusterID, String inc_fileTableEntries) throws TException {
+    public messageProtocol mergeFileTable(String inc_ipAddress, int inc_port, String inc_fileTableEntries) throws TException {
         messageProtocol inc_fileTable;
         String existingTableEntries = this.getFileTable().toString();
         logger.info("Incoming file table from " + inc_ipAddress + " : " + inc_port+" : "+inc_fileTableEntries);
@@ -255,23 +272,24 @@ public class Client extends Node implements services.Iface {
         logger.info("File table from " + inc_ipAddress + " : " + inc_port+" merged with "+this.getIpAddress()+" : "+this.getPort());
         logger.info("Merged table : " +this.getFileTable().toString());
 
-        inc_fileTable = new messageProtocol(ipAddress, port, clusterID, existingTableEntries);
+        inc_fileTable = new messageProtocol(ipAddress, port, existingTableEntries);
+        int inc_clusterID = Utils.getClusterID(inc_ipAddress,inc_port,NO_CLUSTERS);
         if(clusterID == inc_clusterID){
             return inc_fileTable;
         }
-        return null;
+        return new messageProtocol();
     }
 
     @Override
-    public messageProtocol joinRequest(String inc_ipAddress, int inc_port, int inc_clusterID) throws TException {
+    public messageProtocol joinRequest(String inc_ipAddress, int inc_port) throws TException {
 
+        int inc_clusterID=Utils.getClusterID(inc_ipAddress,inc_port,this.NO_CLUSTERS);
         messageProtocol inc_ipTable;
         logger.info("Incoming join request from " + inc_ipAddress + " : " + inc_port);
 
         inc_ipTable = new messageProtocol();
         inc_ipTable.setMyIP(ipAddress);
         inc_ipTable.setMyPort(port);
-        inc_ipTable.setMyClusterID(clusterID);
         inc_ipTable.setEntries(this.getIpTable().toString());
         
         //check whether the incoming join request is from a node in same cluster or not
@@ -286,7 +304,6 @@ public class Client extends Node implements services.Iface {
             dist_ipTable = new messageProtocol();
             dist_ipTable.setMyIP(ipAddress);
             dist_ipTable.setMyPort(port);
-            dist_ipTable.setMyClusterID(clusterID);
             dist_ipTable.setEntries(this.getIpTable().toString());
 
             // for each node in the same cluster send iptable to merge
@@ -303,10 +320,10 @@ public class Client extends Node implements services.Iface {
             }
         }
 
-        return null;
+        return new messageProtocol();
 
     }
-    private void invokeMergeIPTable(String invIp, int invPort, messageProtocol dist_ipTable ){
+    synchronized private void invokeMergeIPTable(String invIp, int invPort, messageProtocol dist_ipTable ){
 
         TTransport transport;
         try {
@@ -331,9 +348,10 @@ public class Client extends Node implements services.Iface {
     @Override
     public void mergeIPTable(messageProtocol ipTable) throws TException {
 
+        int inc_cluster_id = Utils.getClusterID(ipTable.getMyIP(),ipTable.getMyPort(),NO_CLUSTERS);
         if (ipTable!=null && !ipTable.getEntries().isEmpty()){
-        IPTable ipTableToMerge = new IPTable(ipTable.getMyIP(),ipTable.getMyPort(),ipTable.myClusterID);
-            ipTableToMerge.setEntries(ipTable.entries,ipTable.myClusterID);
+        IPTable ipTableToMerge = new IPTable(ipTable.getMyIP(),ipTable.getMyPort(),inc_cluster_id);
+            ipTableToMerge.setEntries(ipTable.entries,inc_cluster_id);
 
 
             for (TableEntry entry : ipTableToMerge.getEntries()){
@@ -375,11 +393,11 @@ public class Client extends Node implements services.Iface {
         return null;
     }
 
-    public FileTable invokeSearch(String keyword,int hopCount){
+    synchronized public FileTable invokeSearch(String keyword,int hopCount){
         return invokeSearch(this.ipAddress,this.port,keyword,hopCount);
     }
 
-    private FileTable invokeSearch(String in_ipAddr, int in_port, String keyword,int hopCount) {
+    synchronized private FileTable invokeSearch(String in_ipAddr, int in_port, String keyword,int hopCount) {
 
         TTransport transport;
         try {
