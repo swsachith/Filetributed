@@ -410,11 +410,14 @@ public class Client extends Node implements services.Iface {
                 if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
                     logger.info("search for " + keyword + ": invoking search in cluster : "+Utils.getClusterID(entry.getIpAddress(),Integer.parseInt(entry.getPort()),NO_CLUSTERS)+entry.getIpAddress()+" : " +entry.getPort());
                     FileTable fileTable1 = invokeSearch(entry.getIpAddress(), Integer.parseInt(entry.getPort()), keyword, hopCount - 1);
-                    result="";
-                    for (FileTableEntry entry2 : fileTable1.getEntries()){
-                        result+=entry2.toString()+";";
+
+                    if (fileTable1!=null) {
+                        result = "";
+                        for (FileTableEntry entry2 : fileTable1.getEntries()) {
+                            result += entry2.toString() + ";";
+                        }
+                        return new searchResponse(result);
                     }
-                    return new searchResponse(result);
                 }
             }
         }
