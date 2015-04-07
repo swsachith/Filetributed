@@ -173,17 +173,17 @@ public class Client extends Node implements services.Iface {
 
     }
 
-    private void sendJoin(Node receivedNode ){
+    private IPTable sendJoin(Node receivedNode ){
         TTransport transport;
         try {
             transport = new TSocket(receivedNode.getIpAddress(), receivedNode.getPort());
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
-            JoinNode.Client client = new JoinNode.Client(protocol);
+            services.Client client = new services.Client(protocol);
 
             logger.info("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
-            iptable recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
+            messageProtocol recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
             transport.close();
 
             IPTable ipTableToJoin = new IPTable(recvd_ipTable.getMyIP(),recvd_ipTable.getMyPort(),recvd_ipTable.myClusterID);
