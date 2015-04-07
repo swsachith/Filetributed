@@ -31,13 +31,17 @@ public class QueryThread extends Thread {
             while (true){
                 if (text.equals("exit")){
                     client.leaveInvoked();
-                }else if(text.substring(0,5).equals("query")){
+                }else if(text.length()>=6 && text.substring(0,5).equals("query")){
 
 
                     String keyword = text.substring(6).trim();
-                    logger.info("search for "+keyword+"started...");
-                    FileTable fileTable = client.invokeSearch(keyword, 4);
-                    System.out.println(fileTable.toString());
+                    logger.info("search for "+keyword+" started...");
+                    FileTable fileTable = client.invokeSearch(keyword, 3);
+                    if (fileTable!=null) {
+                        System.out.println(fileTable.toString());
+                    }else {
+                        System.out.println("No file found");
+                    }
                 }
 
                 text="";
