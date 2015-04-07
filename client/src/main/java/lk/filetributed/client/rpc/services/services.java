@@ -43,9 +43,9 @@ public class services {
 
     public void mergeIPTable(messageProtocol ipTable) throws TException;
 
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException;
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException;
 
-    public searchResponse searchFile(String fileName) throws TException;
+    public searchResponse searchFile(String keyword, int hopCount) throws TException;
 
   }
 
@@ -55,9 +55,9 @@ public class services {
 
     public void mergeIPTable(messageProtocol ipTable, AsyncMethodCallback resultHandler) throws TException;
 
-    public void mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable, AsyncMethodCallback resultHandler) throws TException;
+    public void mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException;
 
-    public void searchFile(String fileName, AsyncMethodCallback resultHandler) throws TException;
+    public void searchFile(String keyword, int hopCount, AsyncMethodCallback resultHandler) throws TException;
 
   }
 
@@ -126,19 +126,19 @@ public class services {
       return;
     }
 
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException
     {
-      send_mergeFileTable(ipAddress, port, clusterID, fileTable);
+      send_mergeFileTable(ipAddress, port, clusterID, fileTableEntries);
       return recv_mergeFileTable();
     }
 
-    public void send_mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException
+    public void send_mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries) throws TException
     {
       mergeFileTable_args args = new mergeFileTable_args();
       args.setIpAddress(ipAddress);
       args.setPort(port);
       args.setClusterID(clusterID);
-      args.setFileTable(fileTable);
+      args.setFileTableEntries(fileTableEntries);
       sendBase("mergeFileTable", args);
     }
 
@@ -152,16 +152,17 @@ public class services {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "mergeFileTable failed: unknown result");
     }
 
-    public searchResponse searchFile(String fileName) throws TException
+    public searchResponse searchFile(String keyword, int hopCount) throws TException
     {
-      send_searchFile(fileName);
+      send_searchFile(keyword, hopCount);
       return recv_searchFile();
     }
 
-    public void send_searchFile(String fileName) throws TException
+    public void send_searchFile(String keyword, int hopCount) throws TException
     {
       searchFile_args args = new searchFile_args();
-      args.setFileName(fileName);
+      args.setKeyword(keyword);
+      args.setHopCount(hopCount);
       sendBase("searchFile", args);
     }
 
@@ -263,9 +264,9 @@ public class services {
       }
     }
 
-    public void mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable, AsyncMethodCallback resultHandler) throws TException {
+    public void mergeFileTable(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler) throws TException {
       checkReady();
-      mergeFileTable_call method_call = new mergeFileTable_call(ipAddress, port, clusterID, fileTable, resultHandler, this, ___protocolFactory, ___transport);
+      mergeFileTable_call method_call = new mergeFileTable_call(ipAddress, port, clusterID, fileTableEntries, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -274,13 +275,13 @@ public class services {
       private String ipAddress;
       private int port;
       private int clusterID;
-      private messageProtocol fileTable;
-      public mergeFileTable_call(String ipAddress, int port, int clusterID, messageProtocol fileTable, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
+      private String fileTableEntries;
+      public mergeFileTable_call(String ipAddress, int port, int clusterID, String fileTableEntries, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.ipAddress = ipAddress;
         this.port = port;
         this.clusterID = clusterID;
-        this.fileTable = fileTable;
+        this.fileTableEntries = fileTableEntries;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws TException {
@@ -289,7 +290,7 @@ public class services {
         args.setIpAddress(ipAddress);
         args.setPort(port);
         args.setClusterID(clusterID);
-        args.setFileTable(fileTable);
+        args.setFileTableEntries(fileTableEntries);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -304,24 +305,27 @@ public class services {
       }
     }
 
-    public void searchFile(String fileName, AsyncMethodCallback resultHandler) throws TException {
+    public void searchFile(String keyword, int hopCount, AsyncMethodCallback resultHandler) throws TException {
       checkReady();
-      searchFile_call method_call = new searchFile_call(fileName, resultHandler, this, ___protocolFactory, ___transport);
+      searchFile_call method_call = new searchFile_call(keyword, hopCount, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class searchFile_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String fileName;
-      public searchFile_call(String fileName, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
+      private String keyword;
+      private int hopCount;
+      public searchFile_call(String keyword, int hopCount, AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.fileName = fileName;
+        this.keyword = keyword;
+        this.hopCount = hopCount;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("searchFile", org.apache.thrift.protocol.TMessageType.CALL, 0));
         searchFile_args args = new searchFile_args();
-        args.setFileName(fileName);
+        args.setKeyword(keyword);
+        args.setHopCount(hopCount);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -411,7 +415,7 @@ public class services {
 
       public mergeFileTable_result getResult(I iface, mergeFileTable_args args) throws TException {
         mergeFileTable_result result = new mergeFileTable_result();
-        result.success = iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTable);
+        result.success = iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTableEntries);
         return result;
       }
     }
@@ -431,7 +435,7 @@ public class services {
 
       public searchFile_result getResult(I iface, searchFile_args args) throws TException {
         searchFile_result result = new searchFile_result();
-        result.success = iface.searchFile(args.fileName);
+        result.success = iface.searchFile(args.keyword, args.hopCount);
         return result;
       }
     }
@@ -604,7 +608,7 @@ public class services {
       }
 
       public void start(I iface, mergeFileTable_args args, AsyncMethodCallback<messageProtocol> resultHandler) throws TException {
-        iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTable,resultHandler);
+        iface.mergeFileTable(args.ipAddress, args.port, args.clusterID, args.fileTableEntries,resultHandler);
       }
     }
 
@@ -655,7 +659,7 @@ public class services {
       }
 
       public void start(I iface, searchFile_args args, AsyncMethodCallback<searchResponse> resultHandler) throws TException {
-        iface.searchFile(args.fileName,resultHandler);
+        iface.searchFile(args.keyword, args.hopCount,resultHandler);
       }
     }
 
@@ -2210,7 +2214,7 @@ public class services {
     private static final org.apache.thrift.protocol.TField IP_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddress", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
     private static final org.apache.thrift.protocol.TField CLUSTER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("clusterID", org.apache.thrift.protocol.TType.I32, (short)3);
-    private static final org.apache.thrift.protocol.TField FILE_TABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileTable", org.apache.thrift.protocol.TType.STRUCT, (short)4);
+    private static final org.apache.thrift.protocol.TField FILE_TABLE_ENTRIES_FIELD_DESC = new org.apache.thrift.protocol.TField("fileTableEntries", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2221,14 +2225,14 @@ public class services {
     public String ipAddress; // required
     public int port; // required
     public int clusterID; // required
-    public messageProtocol fileTable; // required
+    public String fileTableEntries; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       IP_ADDRESS((short)1, "ipAddress"),
       PORT((short)2, "port"),
       CLUSTER_ID((short)3, "clusterID"),
-      FILE_TABLE((short)4, "fileTable");
+      FILE_TABLE_ENTRIES((short)4, "fileTableEntries");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2249,8 +2253,8 @@ public class services {
             return PORT;
           case 3: // CLUSTER_ID
             return CLUSTER_ID;
-          case 4: // FILE_TABLE
-            return FILE_TABLE;
+          case 4: // FILE_TABLE_ENTRIES
+            return FILE_TABLE_ENTRIES;
           default:
             return null;
         }
@@ -2303,8 +2307,8 @@ public class services {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.CLUSTER_ID, new org.apache.thrift.meta_data.FieldMetaData("clusterID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.FILE_TABLE, new org.apache.thrift.meta_data.FieldMetaData("fileTable", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, messageProtocol.class)));
+      tmpMap.put(_Fields.FILE_TABLE_ENTRIES, new org.apache.thrift.meta_data.FieldMetaData("fileTableEntries", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(mergeFileTable_args.class, metaDataMap);
     }
@@ -2316,7 +2320,7 @@ public class services {
       String ipAddress,
       int port,
       int clusterID,
-      messageProtocol fileTable)
+      String fileTableEntries)
     {
       this();
       this.ipAddress = ipAddress;
@@ -2324,7 +2328,7 @@ public class services {
       setPortIsSet(true);
       this.clusterID = clusterID;
       setClusterIDIsSet(true);
-      this.fileTable = fileTable;
+      this.fileTableEntries = fileTableEntries;
     }
 
     /**
@@ -2337,8 +2341,8 @@ public class services {
       }
       this.port = other.port;
       this.clusterID = other.clusterID;
-      if (other.isSetFileTable()) {
-        this.fileTable = new messageProtocol(other.fileTable);
+      if (other.isSetFileTableEntries()) {
+        this.fileTableEntries = other.fileTableEntries;
       }
     }
 
@@ -2353,7 +2357,7 @@ public class services {
       this.port = 0;
       setClusterIDIsSet(false);
       this.clusterID = 0;
-      this.fileTable = null;
+      this.fileTableEntries = null;
     }
 
     public String getIpAddress() {
@@ -2426,27 +2430,27 @@ public class services {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CLUSTERID_ISSET_ID, value);
     }
 
-    public messageProtocol getFileTable() {
-      return this.fileTable;
+    public String getFileTableEntries() {
+      return this.fileTableEntries;
     }
 
-    public mergeFileTable_args setFileTable(messageProtocol fileTable) {
-      this.fileTable = fileTable;
+    public mergeFileTable_args setFileTableEntries(String fileTableEntries) {
+      this.fileTableEntries = fileTableEntries;
       return this;
     }
 
-    public void unsetFileTable() {
-      this.fileTable = null;
+    public void unsetFileTableEntries() {
+      this.fileTableEntries = null;
     }
 
-    /** Returns true if field fileTable is set (has been assigned a value) and false otherwise */
-    public boolean isSetFileTable() {
-      return this.fileTable != null;
+    /** Returns true if field fileTableEntries is set (has been assigned a value) and false otherwise */
+    public boolean isSetFileTableEntries() {
+      return this.fileTableEntries != null;
     }
 
-    public void setFileTableIsSet(boolean value) {
+    public void setFileTableEntriesIsSet(boolean value) {
       if (!value) {
-        this.fileTable = null;
+        this.fileTableEntries = null;
       }
     }
 
@@ -2476,11 +2480,11 @@ public class services {
         }
         break;
 
-      case FILE_TABLE:
+      case FILE_TABLE_ENTRIES:
         if (value == null) {
-          unsetFileTable();
+          unsetFileTableEntries();
         } else {
-          setFileTable((messageProtocol)value);
+          setFileTableEntries((String)value);
         }
         break;
 
@@ -2498,8 +2502,8 @@ public class services {
       case CLUSTER_ID:
         return Integer.valueOf(getClusterID());
 
-      case FILE_TABLE:
-        return getFileTable();
+      case FILE_TABLE_ENTRIES:
+        return getFileTableEntries();
 
       }
       throw new IllegalStateException();
@@ -2518,8 +2522,8 @@ public class services {
         return isSetPort();
       case CLUSTER_ID:
         return isSetClusterID();
-      case FILE_TABLE:
-        return isSetFileTable();
+      case FILE_TABLE_ENTRIES:
+        return isSetFileTableEntries();
       }
       throw new IllegalStateException();
     }
@@ -2564,12 +2568,12 @@ public class services {
           return false;
       }
 
-      boolean this_present_fileTable = true && this.isSetFileTable();
-      boolean that_present_fileTable = true && that.isSetFileTable();
-      if (this_present_fileTable || that_present_fileTable) {
-        if (!(this_present_fileTable && that_present_fileTable))
+      boolean this_present_fileTableEntries = true && this.isSetFileTableEntries();
+      boolean that_present_fileTableEntries = true && that.isSetFileTableEntries();
+      if (this_present_fileTableEntries || that_present_fileTableEntries) {
+        if (!(this_present_fileTableEntries && that_present_fileTableEntries))
           return false;
-        if (!this.fileTable.equals(that.fileTable))
+        if (!this.fileTableEntries.equals(that.fileTableEntries))
           return false;
       }
 
@@ -2595,10 +2599,10 @@ public class services {
       if (present_clusterID)
         list.add(clusterID);
 
-      boolean present_fileTable = true && (isSetFileTable());
-      list.add(present_fileTable);
-      if (present_fileTable)
-        list.add(fileTable);
+      boolean present_fileTableEntries = true && (isSetFileTableEntries());
+      list.add(present_fileTableEntries);
+      if (present_fileTableEntries)
+        list.add(fileTableEntries);
 
       return list.hashCode();
     }
@@ -2641,12 +2645,12 @@ public class services {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetFileTable()).compareTo(other.isSetFileTable());
+      lastComparison = Boolean.valueOf(isSetFileTableEntries()).compareTo(other.isSetFileTableEntries());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetFileTable()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileTable, other.fileTable);
+      if (isSetFileTableEntries()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileTableEntries, other.fileTableEntries);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2687,11 +2691,11 @@ public class services {
       sb.append(this.clusterID);
       first = false;
       if (!first) sb.append(", ");
-      sb.append("fileTable:");
-      if (this.fileTable == null) {
+      sb.append("fileTableEntries:");
+      if (this.fileTableEntries == null) {
         sb.append("null");
       } else {
-        sb.append(this.fileTable);
+        sb.append(this.fileTableEntries);
       }
       first = false;
       sb.append(")");
@@ -2701,9 +2705,6 @@ public class services {
     public void validate() throws TException {
       // check for required fields
       // check for sub-struct validity
-      if (fileTable != null) {
-        fileTable.validate();
-      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -2766,11 +2767,10 @@ public class services {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // FILE_TABLE
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.fileTable = new messageProtocol();
-                struct.fileTable.read(iprot);
-                struct.setFileTableIsSet(true);
+            case 4: // FILE_TABLE_ENTRIES
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.fileTableEntries = iprot.readString();
+                struct.setFileTableEntriesIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -2801,9 +2801,9 @@ public class services {
         oprot.writeFieldBegin(CLUSTER_ID_FIELD_DESC);
         oprot.writeI32(struct.clusterID);
         oprot.writeFieldEnd();
-        if (struct.fileTable != null) {
-          oprot.writeFieldBegin(FILE_TABLE_FIELD_DESC);
-          struct.fileTable.write(oprot);
+        if (struct.fileTableEntries != null) {
+          oprot.writeFieldBegin(FILE_TABLE_ENTRIES_FIELD_DESC);
+          oprot.writeString(struct.fileTableEntries);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -2833,7 +2833,7 @@ public class services {
         if (struct.isSetClusterID()) {
           optionals.set(2);
         }
-        if (struct.isSetFileTable()) {
+        if (struct.isSetFileTableEntries()) {
           optionals.set(3);
         }
         oprot.writeBitSet(optionals, 4);
@@ -2846,8 +2846,8 @@ public class services {
         if (struct.isSetClusterID()) {
           oprot.writeI32(struct.clusterID);
         }
-        if (struct.isSetFileTable()) {
-          struct.fileTable.write(oprot);
+        if (struct.isSetFileTableEntries()) {
+          oprot.writeString(struct.fileTableEntries);
         }
       }
 
@@ -2868,9 +2868,8 @@ public class services {
           struct.setClusterIDIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.fileTable = new messageProtocol();
-          struct.fileTable.read(iprot);
-          struct.setFileTableIsSet(true);
+          struct.fileTableEntries = iprot.readString();
+          struct.setFileTableEntriesIsSet(true);
         }
       }
     }
@@ -3246,7 +3245,8 @@ public class services {
   public static class searchFile_args implements org.apache.thrift.TBase<searchFile_args, searchFile_args._Fields>, java.io.Serializable, Cloneable, Comparable<searchFile_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchFile_args");
 
-    private static final org.apache.thrift.protocol.TField FILE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("fileName", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField KEYWORD_FIELD_DESC = new org.apache.thrift.protocol.TField("keyword", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField HOP_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("hopCount", org.apache.thrift.protocol.TType.I32, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3254,11 +3254,13 @@ public class services {
       schemes.put(TupleScheme.class, new searchFile_argsTupleSchemeFactory());
     }
 
-    public String fileName; // required
+    public String keyword; // required
+    public int hopCount; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      FILE_NAME((short)1, "fileName");
+      KEYWORD((short)1, "keyword"),
+      HOP_COUNT((short)2, "hopCount");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3273,8 +3275,10 @@ public class services {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // FILE_NAME
-            return FILE_NAME;
+          case 1: // KEYWORD
+            return KEYWORD;
+          case 2: // HOP_COUNT
+            return HOP_COUNT;
           default:
             return null;
         }
@@ -3315,11 +3319,15 @@ public class services {
     }
 
     // isset id assignments
+    private static final int __HOPCOUNT_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.FILE_NAME, new org.apache.thrift.meta_data.FieldMetaData("fileName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.KEYWORD, new org.apache.thrift.meta_data.FieldMetaData("keyword", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.HOP_COUNT, new org.apache.thrift.meta_data.FieldMetaData("hopCount", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchFile_args.class, metaDataMap);
     }
@@ -3328,19 +3336,24 @@ public class services {
     }
 
     public searchFile_args(
-      String fileName)
+      String keyword,
+      int hopCount)
     {
       this();
-      this.fileName = fileName;
+      this.keyword = keyword;
+      this.hopCount = hopCount;
+      setHopCountIsSet(true);
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public searchFile_args(searchFile_args other) {
-      if (other.isSetFileName()) {
-        this.fileName = other.fileName;
+      __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetKeyword()) {
+        this.keyword = other.keyword;
       }
+      this.hopCount = other.hopCount;
     }
 
     public searchFile_args deepCopy() {
@@ -3349,40 +3362,73 @@ public class services {
 
     @Override
     public void clear() {
-      this.fileName = null;
+      this.keyword = null;
+      setHopCountIsSet(false);
+      this.hopCount = 0;
     }
 
-    public String getFileName() {
-      return this.fileName;
+    public String getKeyword() {
+      return this.keyword;
     }
 
-    public searchFile_args setFileName(String fileName) {
-      this.fileName = fileName;
+    public searchFile_args setKeyword(String keyword) {
+      this.keyword = keyword;
       return this;
     }
 
-    public void unsetFileName() {
-      this.fileName = null;
+    public void unsetKeyword() {
+      this.keyword = null;
     }
 
-    /** Returns true if field fileName is set (has been assigned a value) and false otherwise */
-    public boolean isSetFileName() {
-      return this.fileName != null;
+    /** Returns true if field keyword is set (has been assigned a value) and false otherwise */
+    public boolean isSetKeyword() {
+      return this.keyword != null;
     }
 
-    public void setFileNameIsSet(boolean value) {
+    public void setKeywordIsSet(boolean value) {
       if (!value) {
-        this.fileName = null;
+        this.keyword = null;
       }
+    }
+
+    public int getHopCount() {
+      return this.hopCount;
+    }
+
+    public searchFile_args setHopCount(int hopCount) {
+      this.hopCount = hopCount;
+      setHopCountIsSet(true);
+      return this;
+    }
+
+    public void unsetHopCount() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __HOPCOUNT_ISSET_ID);
+    }
+
+    /** Returns true if field hopCount is set (has been assigned a value) and false otherwise */
+    public boolean isSetHopCount() {
+      return EncodingUtils.testBit(__isset_bitfield, __HOPCOUNT_ISSET_ID);
+    }
+
+    public void setHopCountIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __HOPCOUNT_ISSET_ID, value);
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case FILE_NAME:
+      case KEYWORD:
         if (value == null) {
-          unsetFileName();
+          unsetKeyword();
         } else {
-          setFileName((String)value);
+          setKeyword((String)value);
+        }
+        break;
+
+      case HOP_COUNT:
+        if (value == null) {
+          unsetHopCount();
+        } else {
+          setHopCount((Integer)value);
         }
         break;
 
@@ -3391,8 +3437,11 @@ public class services {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case FILE_NAME:
-        return getFileName();
+      case KEYWORD:
+        return getKeyword();
+
+      case HOP_COUNT:
+        return Integer.valueOf(getHopCount());
 
       }
       throw new IllegalStateException();
@@ -3405,8 +3454,10 @@ public class services {
       }
 
       switch (field) {
-      case FILE_NAME:
-        return isSetFileName();
+      case KEYWORD:
+        return isSetKeyword();
+      case HOP_COUNT:
+        return isSetHopCount();
       }
       throw new IllegalStateException();
     }
@@ -3424,12 +3475,21 @@ public class services {
       if (that == null)
         return false;
 
-      boolean this_present_fileName = true && this.isSetFileName();
-      boolean that_present_fileName = true && that.isSetFileName();
-      if (this_present_fileName || that_present_fileName) {
-        if (!(this_present_fileName && that_present_fileName))
+      boolean this_present_keyword = true && this.isSetKeyword();
+      boolean that_present_keyword = true && that.isSetKeyword();
+      if (this_present_keyword || that_present_keyword) {
+        if (!(this_present_keyword && that_present_keyword))
           return false;
-        if (!this.fileName.equals(that.fileName))
+        if (!this.keyword.equals(that.keyword))
+          return false;
+      }
+
+      boolean this_present_hopCount = true;
+      boolean that_present_hopCount = true;
+      if (this_present_hopCount || that_present_hopCount) {
+        if (!(this_present_hopCount && that_present_hopCount))
+          return false;
+        if (this.hopCount != that.hopCount)
           return false;
       }
 
@@ -3440,10 +3500,15 @@ public class services {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
-      boolean present_fileName = true && (isSetFileName());
-      list.add(present_fileName);
-      if (present_fileName)
-        list.add(fileName);
+      boolean present_keyword = true && (isSetKeyword());
+      list.add(present_keyword);
+      if (present_keyword)
+        list.add(keyword);
+
+      boolean present_hopCount = true;
+      list.add(present_hopCount);
+      if (present_hopCount)
+        list.add(hopCount);
 
       return list.hashCode();
     }
@@ -3456,12 +3521,22 @@ public class services {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetFileName()).compareTo(other.isSetFileName());
+      lastComparison = Boolean.valueOf(isSetKeyword()).compareTo(other.isSetKeyword());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetFileName()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileName, other.fileName);
+      if (isSetKeyword()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.keyword, other.keyword);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetHopCount()).compareTo(other.isSetHopCount());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetHopCount()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hopCount, other.hopCount);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -3486,12 +3561,16 @@ public class services {
       StringBuilder sb = new StringBuilder("searchFile_args(");
       boolean first = true;
 
-      sb.append("fileName:");
-      if (this.fileName == null) {
+      sb.append("keyword:");
+      if (this.keyword == null) {
         sb.append("null");
       } else {
-        sb.append(this.fileName);
+        sb.append(this.keyword);
       }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("hopCount:");
+      sb.append(this.hopCount);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -3512,6 +3591,8 @@ public class services {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (TException te) {
         throw new java.io.IOException(te);
@@ -3536,10 +3617,18 @@ public class services {
             break;
           }
           switch (schemeField.id) {
-            case 1: // FILE_NAME
+            case 1: // KEYWORD
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.fileName = iprot.readString();
-                struct.setFileNameIsSet(true);
+                struct.keyword = iprot.readString();
+                struct.setKeywordIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // HOP_COUNT
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.hopCount = iprot.readI32();
+                struct.setHopCountIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -3559,11 +3648,14 @@ public class services {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.fileName != null) {
-          oprot.writeFieldBegin(FILE_NAME_FIELD_DESC);
-          oprot.writeString(struct.fileName);
+        if (struct.keyword != null) {
+          oprot.writeFieldBegin(KEYWORD_FIELD_DESC);
+          oprot.writeString(struct.keyword);
           oprot.writeFieldEnd();
         }
+        oprot.writeFieldBegin(HOP_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.hopCount);
+        oprot.writeFieldEnd();
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -3582,22 +3674,32 @@ public class services {
       public void write(org.apache.thrift.protocol.TProtocol prot, searchFile_args struct) throws TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetFileName()) {
+        if (struct.isSetKeyword()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
-        if (struct.isSetFileName()) {
-          oprot.writeString(struct.fileName);
+        if (struct.isSetHopCount()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetKeyword()) {
+          oprot.writeString(struct.keyword);
+        }
+        if (struct.isSetHopCount()) {
+          oprot.writeI32(struct.hopCount);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, searchFile_args struct) throws TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.fileName = iprot.readString();
-          struct.setFileNameIsSet(true);
+          struct.keyword = iprot.readString();
+          struct.setKeywordIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.hopCount = iprot.readI32();
+          struct.setHopCountIsSet(true);
         }
       }
     }
