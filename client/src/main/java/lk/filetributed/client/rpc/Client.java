@@ -2,6 +2,7 @@ package lk.filetributed.client.rpc;
 
 import lk.filetributed.client.BootstrapConnector;
 import lk.filetributed.client.rpc.services.JoinNode;
+import lk.filetributed.client.rpc.services.iptable;
 import lk.filetributed.model.*;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -169,8 +171,8 @@ public class Client extends Node implements JoinNode.Iface {
             TProtocol protocol = new TBinaryProtocol(transport);
             JoinNode.Client client = new JoinNode.Client(protocol);
 
-            logger.info("Sending join request to "+receivedNode.getIpAddress()+ " : "+ receivedNode.getPort());
-            String s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
+            logger.info("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
+            iptable s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
             transport.close();
 
             //toDo return ip table
@@ -184,9 +186,19 @@ public class Client extends Node implements JoinNode.Iface {
     }
 
     @Override
-    public String joinRequest(String inc_ipAddress, int inc_port, int inc_clusterID) throws TException {
-        logger.info("Incoming join request from " + inc_ipAddress + " : " + inc_port);
+    public iptable joinRequest(String ipAddress, int port, int clusterID) throws TException {
+        iptable data;
+        System.out.println("join request came from "+ipAddress+" : "+port);
+        System.out.println("setting iptable...");
 
+        data = new iptable();
+        data.setMyIP(ipAddress);
+        data.setMyPort(port);
+        data.setMyClusterID(clusterID);
+        data.setEntries(this.getIpTable().toString());
+        return data;
+        
+        
         //check whether the incoming join request is from a node in same cluster or not
         if(clusterID==inc_clusterID){
 
