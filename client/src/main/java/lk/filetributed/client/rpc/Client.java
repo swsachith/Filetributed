@@ -35,7 +35,7 @@ public class Client extends Node implements JoinNode.Iface {
 
 
     public Client() {
-        configClient("client/config/client2.xml");
+        configClient("client/config/client4.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -160,6 +160,9 @@ public class Client extends Node implements JoinNode.Iface {
             }
         }
 
+        logger.info("##  received iptable 1"+ inc_ipTable1.getEntries().toString());
+        logger.info("##  received iptable 2"+ inc_ipTable2.getEntries().toString());
+
     }
 
     private IPTable sendJoin(Node receivedNode ){
@@ -172,10 +175,13 @@ public class Client extends Node implements JoinNode.Iface {
             JoinNode.Client client = new JoinNode.Client(protocol);
 
             logger.info("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
-            iptable s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
+            iptable recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
             transport.close();
 
-            //toDo return ip table
+            IPTable ipTableToJoin = new IPTable(recvd_ipTable.getMyIP(),recvd_ipTable.getMyPort(),recvd_ipTable.myClusterID);
+            ipTableToJoin.setEntries(recvd_ipTable.entries,recvd_ipTable.myClusterID);
+
+            return ipTableToJoin;
 
         } catch (TTransportException e) {
             e.printStackTrace();
@@ -186,18 +192,16 @@ public class Client extends Node implements JoinNode.Iface {
     }
 
     @Override
-    public iptable joinRequest(String ipAddress, int port, int clusterID) throws TException {
-        iptable data;
-        System.out.println("join request came from "+ipAddress+" : "+port);
-        System.out.println("setting iptable...");
+    public iptable joinRequest(String inc_ipAddress, int inc_port, int inc_clusterID) throws TException {
 
-        data = new iptable();
-        data.setMyIP(ipAddress);
-        data.setMyPort(port);
-        data.setMyClusterID(clusterID);
-        data.setEntries(this.getIpTable().toString());
-        return data;
-        
+        iptable inc_ipTable;
+        logger.info("Incoming join request from " + inc_ipAddress + " : " + inc_port);
+
+        inc_ipTable = new iptable();
+        inc_ipTable.setMyIP(ipAddress);
+        inc_ipTable.setMyPort(port);
+        inc_ipTable.setMyClusterID(clusterID);
+        inc_ipTable.setEntries(this.getIpTable().toString());
         
         //check whether the incoming join request is from a node in same cluster or not
         if(clusterID==inc_clusterID){
@@ -205,7 +209,7 @@ public class Client extends Node implements JoinNode.Iface {
             ipTable.addTableEntry(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""));
 
             logger.info("Returning ipTable for join request form "+ inc_ipAddress + " : " + inc_port);
-            //ToDo : return iptable
+            return inc_ipTable;
         }else {
             //checking whether my iptable has ip from incoming cluster
             if (ipTable.searchClusterID(inc_clusterID+"")==null){
@@ -213,7 +217,8 @@ public class Client extends Node implements JoinNode.Iface {
             }
         }
 
-        return "success";
+        return null;
+
     }
 
 
