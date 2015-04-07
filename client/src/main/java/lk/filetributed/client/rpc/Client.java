@@ -25,7 +25,7 @@ public class Client extends Node implements services.Iface {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "192.168.1.8";
+    private static final String SERVER_NAME = "127.0.0.1";
     private static final int PORT = 9889;
 
     private static String CLIENT_IP;
@@ -37,7 +37,7 @@ public class Client extends Node implements services.Iface {
 
 
     public Client() {
-        configClient("client/config/client1.xml");
+        configClient("client/config/client3.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -405,11 +405,16 @@ public class Client extends Node implements services.Iface {
             }
             return new searchResponse(result);
         }else {
-            logger.info("search for " + keyword+" not in my cluster");
+            logger.info("File " + keyword+" not in my cluster");
             for (TableEntry entry : this.ipTable.getEntries()){
                 if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
-                    invokeSearch(entry.getIpAddress(),Integer.parseInt(entry.getPort()),keyword,hopCount-1);
-                    logger.info("search for " + keyword + "invoked search in "+entry.getIpAddress()+" : " +entry.getPort());
+                    logger.info("search for " + keyword + ": invoking search in cluster : "+Utils.getClusterID(entry.getIpAddress(),Integer.parseInt(entry.getPort()),NO_CLUSTERS)+entry.getIpAddress()+" : " +entry.getPort());
+                    FileTable fileTable1 = invokeSearch(entry.getIpAddress(), Integer.parseInt(entry.getPort()), keyword, hopCount - 1);
+                    result="";
+                    for (FileTableEntry entry2 : fileTable1.getEntries()){
+                        result+=entry2.toString()+";";
+                    }
+                    return new searchResponse(result);
                 }
             }
         }

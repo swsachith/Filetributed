@@ -36,7 +36,7 @@ public class QueryThread extends Thread {
 
                     String keyword = text.substring(6).trim();
                     logger.info("search for "+keyword+" started...");
-                    FileTable fileTable = client.invokeSearch(keyword, 3);
+                    FileTable fileTable = client.invokeSearch(keyword, 4);
                     if (fileTable!=null) {
                         System.out.println(fileTable.toString());
                     }else {
