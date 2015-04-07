@@ -115,7 +115,13 @@ public class Client extends Node implements JoinNode.Iface {
         Node receivedNode = new Node(RECIEVED_IP, RECIEVED_PORT, NO_CLUSTERS);
 
         this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP, RECIEVED_PORT + "", clusterID + ""));
-        sendJoin(receivedNode);
+        IPTable inc_ipTable = sendJoin(receivedNode);
+
+        if (inc_ipTable!=null){
+            for (TableEntry entry : inc_ipTable.getEntries()){
+                this.ipTable.addTableEntry(entry);
+            }
+        }
 
     }
 
@@ -129,7 +135,13 @@ public class Client extends Node implements JoinNode.Iface {
         this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_01, RECIEVED_PORT_01 + "", clusterID01 + ""));
 
         //generating the join message
-        sendJoin(receivedNode1);
+        IPTable inc_ipTable1 = sendJoin(receivedNode1);
+
+        if (inc_ipTable1!=null){
+            for (TableEntry entry : inc_ipTable1.getEntries()){
+                this.ipTable.addTableEntry(entry);
+            }
+        }
 
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
@@ -138,11 +150,17 @@ public class Client extends Node implements JoinNode.Iface {
         this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_02, RECIEVED_PORT_02 + "", clusterID02 + ""));
 
         //generating the join message
-        sendJoin(receivedNode2);
+        IPTable inc_ipTable2 = sendJoin(receivedNode2);
+
+        if (inc_ipTable2!=null){
+            for (TableEntry entry : inc_ipTable2.getEntries()){
+                this.ipTable.addTableEntry(entry);
+            }
+        }
 
     }
 
-    private void sendJoin(Node receivedNode ){
+    private IPTable sendJoin(Node receivedNode ){
         TTransport transport;
         try {
             transport = new TSocket(receivedNode.getIpAddress(), receivedNode.getPort());
@@ -151,59 +169,42 @@ public class Client extends Node implements JoinNode.Iface {
             TProtocol protocol = new TBinaryProtocol(transport);
             JoinNode.Client client = new JoinNode.Client(protocol);
 
-            System.out.println("sending join request...");
+            logger.info("Sending join request to "+receivedNode.getIpAddress()+ " : "+ receivedNode.getPort());
             String s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP,CLIENT_PORT,NO_CLUSTERS));
-            System.out.println(s);
             transport.close();
+
+            //toDo return ip table
 
         } catch (TTransportException e) {
             e.printStackTrace();
         } catch (TException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
-    public String joinRequest(String ipAddress, int port, int clusterID) throws TException {
-        System.out.println("join request came from "+ipAddress+" : "+port);
-        System.out.println("setting iptable...");
+    public String joinRequest(String inc_ipAddress, int inc_port, int inc_clusterID) throws TException {
+        logger.info("Incoming join request from " + inc_ipAddress + " : " + inc_port);
 
-        return "success yakoo";
+        //check whether the incoming join request is from a node in same cluster or not
+        if(clusterID==inc_clusterID){
+
+            ipTable.addTableEntry(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""));
+
+            logger.info("Returning ipTable for join request form "+ inc_ipAddress + " : " + inc_port);
+            //ToDo : return iptable
+        }else {
+            //checking whether my iptable has ip from incoming cluster
+            if (ipTable.searchClusterID(inc_clusterID+"")==null){
+                ipTable.addTableEntry(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""));
+            }
+        }
+
+        return "success";
     }
 
-//    public void processBuffer() {
-//        MessageProtocol message = messageBuffer.getMessage();
-//        switch (MessageProtocolType.valueOf(message.getMessageType())) {
-//
-//            case JOIN:
-//                if (message instanceof JoinProtocol)
-//                    process_JoinMessage((JoinProtocol) message);
-//                break;
-//
-//            case IPTABLE:
-//                if(message instanceof IPTableProtocol){
-//                    process_IPTableMessage((IPTableProtocol)message);
-//                }
-//                //logger.info("IPTable Merging should happen here!");
-//                break;
-//            case FILETABLE:
-//                if(message instanceof FileTableProtocol){
-//                    processFileTableMessage((FileTableProtocol) message);
-//                }
-//                break;
-//            case GROUP:
-//                if (message instanceof GroupProtocol)
-//                    process_groupMessage((GroupProtocol) message);
-//                break;
-//            case QUERY:
-//                if (message instanceof QueryProtocol)
-//                    process_queryMessage((QueryProtocol) message);
-//                break;
-//            default:
-//                break;
-//        }
-//        //logger.info("IP TABLE LOG @ PORT" + CLIENT_PORT + " : " + getIpTable().toString());
-//    }
+
 
 //    private void processFileTableMessage(FileTableProtocol message) {
 //        FileTable receivedFileTable= message.getFileTable();
@@ -307,25 +308,6 @@ public class Client extends Node implements JoinNode.Iface {
 //            JoinProtocol joinMessage = new JoinProtocol(message.getClientIP(), message.getPort());
 //            outBuffer.add(new DispatchMessage(joinMessage.toString(), message.getClientIP(), message.getPort()));
 //        }
-//    }
-
-//    public void sendJoinMessage(String RECIEVED_IP, int RECIEVED_PORT) {
-//        sentJoins.add(new TableEntry(RECIEVED_IP,RECIEVED_PORT+"",Utils.getClusterID(RECIEVED_IP,RECIEVED_PORT,NO_CLUSTERS)+""));
-//        //generating the join message
-//        JoinProtocol joinProtocol = new JoinProtocol(CLIENT_IP, CLIENT_PORT);
-//        String JOIN_MSG = joinProtocol.toString();
-//
-//        outBuffer.add(new DispatchMessage(JOIN_MSG, RECIEVED_IP, RECIEVED_PORT));
-//
-//    }
-
-//    public void sendMyFileTable(String RECIEVED_IP, int RECIEVED_PORT) {
-//
-//        FileTableProtocol fileTableProtocol = new FileTableProtocol(CLIENT_IP,CLIENT_PORT,fileTable);
-//        String fileTableMSG = fileTableProtocol.toString();
-//
-//        outBuffer.add(new DispatchMessage(fileTableMSG,RECIEVED_IP,RECIEVED_PORT));
-//
 //    }
 
 //    public void process_queryMessage(QueryProtocol message) {
