@@ -15,15 +15,22 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 
 public class Client extends Node implements services.Iface {
 
+    @Override
+    public searchResponse searchFile(String keyword, int hopCount) throws TException {
+        return null;
+    }
+
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "127.0.0.1";
+    private static final String SERVER_NAME = "192.168.1.8";
     private static final int PORT = 9889;
 
     private static String CLIENT_IP;
@@ -35,7 +42,7 @@ public class Client extends Node implements services.Iface {
 
 
     public Client() {
-        configClient("client/config/client4.xml");
+        configClient("client/config/client1.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -121,6 +128,16 @@ public class Client extends Node implements services.Iface {
             }
         }
 
+        FileTable inc_fileTable = sendFileTable(receivedNode);
+        logger.info("#  my file table "+ this.fileTable.getEntries().toString());
+        if (inc_fileTable!=null){
+            this.fileTable.mergeEntriesFromTable(inc_fileTable);
+        }
+
+        logger.info("##  received file table "+ inc_fileTable.getEntries().toString());
+
+        logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
+
     }
 
     public void process(String RECIEVED_IP_01, int RECIEVED_PORT_01, String RECIEVED_IP_02, int RECIEVED_PORT_02) {
@@ -141,6 +158,11 @@ public class Client extends Node implements services.Iface {
             }
         }
 
+        FileTable inc_fileTable1 = sendFileTable(receivedNode1);
+        logger.info("#  my file table "+ this.fileTable.getEntries().toString());
+        if (inc_fileTable1!=null){
+            this.fileTable.mergeEntriesFromTable(inc_fileTable1);
+        }
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
         Node receivedNode2 = new Node(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
@@ -158,6 +180,15 @@ public class Client extends Node implements services.Iface {
 
         logger.info("##  received iptable 1"+ inc_ipTable1.getEntries().toString());
         logger.info("##  received iptable 2"+ inc_ipTable2.getEntries().toString());
+
+        FileTable inc_fileTable2 = sendFileTable(receivedNode2);
+        logger.info("##  received file table 1 "+ inc_fileTable1.getEntries().toString());
+        logger.info("##  received file table 2 "+ inc_fileTable2.getEntries().toString());
+        if (inc_fileTable1!=null){
+            this.fileTable.mergeEntriesFromTable(inc_fileTable2);
+        }
+
+        logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
 
     }
 
@@ -183,6 +214,52 @@ public class Client extends Node implements services.Iface {
             e.printStackTrace();
         } catch (TException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    private FileTable sendFileTable(Node receivedNode){
+        TTransport transport;
+        try {
+            transport = new TSocket(receivedNode.getIpAddress(), receivedNode.getPort());
+            transport.open();
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            services.Client client = new services.Client(protocol);
+
+            logger.info("Sending file table to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
+
+            messageProtocol recvd_fileTable = client.mergeFileTable(CLIENT_IP, CLIENT_PORT, this.getClusterID(), this.getFileTable().toString());
+            transport.close();
+
+            FileTable fileTableToJoin = new FileTable();
+            LinkedList<FileTableEntry> entryList = (LinkedList<FileTableEntry>) fileTableToJoin.toList(recvd_fileTable.getEntries());
+            for (Iterator<FileTableEntry> iterator = entryList.iterator(); iterator.hasNext();) {
+                fileTableToJoin.addTableEntry(iterator.next());
+            }
+
+            return fileTableToJoin;
+
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @Override
+    public messageProtocol mergeFileTable(String inc_ipAddress, int inc_port, int inc_clusterID, String inc_fileTableEntries) throws TException {
+        messageProtocol inc_fileTable;
+        String existingTableEntries = this.getFileTable().toString();
+        logger.info("Incoming file table from " + inc_ipAddress + " : " + inc_port+" : "+inc_fileTableEntries);
+        List<FileTableEntry> inc_fileEntryList = this.getFileTable().toList(inc_fileTableEntries);
+        this.getFileTable().mergeEntriesFromTable(new FileTable((java.util.LinkedList<FileTableEntry>) inc_fileEntryList));
+        logger.info("File table from " + inc_ipAddress + " : " + inc_port+" merged with "+this.getIpAddress()+" : "+this.getPort());
+        logger.info("Merged table : " +this.getFileTable().toString());
+
+        inc_fileTable = new messageProtocol(ipAddress, port, clusterID, existingTableEntries);
+        if(clusterID == inc_clusterID){
+            return inc_fileTable;
         }
         return null;
     }
@@ -270,17 +347,6 @@ public class Client extends Node implements services.Iface {
         logger.info("Updated IPTable "+ this.ipTable.toString());
 
 
-    }
-
-    @Override
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException {
-        return null;
-    }
-
-    @Override
-    public searchResponse searchFile(String fileName) throws TException {
-
-        return null;
     }
 
 
