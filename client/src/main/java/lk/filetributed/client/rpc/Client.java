@@ -36,8 +36,8 @@ public class Client extends Node implements services.Iface {
     private static String[] FILE_NAMES;
 
 
-    public Client() {
-        configClient("client/config/client3.xml");
+    public Client(String arg) {
+        configClient("client/config/"+arg);
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -96,7 +96,11 @@ public class Client extends Node implements services.Iface {
     }
 
     public static void main(String[] args) {
-        Client client = new Client();
+        if (args.length>=1) {
+            Client client = new Client(args[0]);
+        }else {
+            Client client = new Client("client1.xml");
+        }
     }
 
     public void response_tokenizer(String server_response) throws IOException {
