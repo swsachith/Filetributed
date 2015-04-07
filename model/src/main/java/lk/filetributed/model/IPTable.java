@@ -52,6 +52,9 @@ public class IPTable {
 
 
     public void setEntries(String entrylist, int clusterID) {
+        if (entrylist.isEmpty()){
+            return;
+        }
         String[] entries = entrylist.trim().split(" ");
         TableEntry newEntry;
         String[] data;
