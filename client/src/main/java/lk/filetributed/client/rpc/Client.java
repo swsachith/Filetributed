@@ -37,7 +37,7 @@ public class Client extends Node implements services.Iface {
 
 
     public Client() {
-        configClient("client/config/client4.xml");
+        configClient("client/config/client1.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -60,6 +60,9 @@ public class Client extends Node implements services.Iface {
 
         Thread t_queryThread = new Thread(new QueryThread(this));
         t_queryThread.start();
+
+        Thread t_heartbeatThread = new Thread(new HeartbeatThread(this));
+        t_heartbeatThread.start();
     }
 
     //connect with the system
@@ -395,6 +398,36 @@ public class Client extends Node implements services.Iface {
         return new searchResponse(" ");
     }
 
+    @Override
+    public String sendBeat(){
+        return "lubdub";
+    }
+
+    public void invokeSendbeat(String in_ipAddr, int in_port){
+        TTransport transport;
+        try {
+            transport = new TSocket(in_ipAddr, in_port);
+            transport.open();
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            services.Client client = new services.Client(protocol);;
+
+            String beatResponse = client.sendBeat();
+            //logger.debug("heart beat from "+in_ipAddr+":"+in_port+" "+beatResponse);
+            transport.close();
+
+
+        } catch (TTransportException e) {
+            logger.info("HeartBeat not returned...");
+            this.ipTable.removeTableEntry(new TableEntry(in_ipAddr,in_port+"",Utils.getClusterID(in_ipAddr, in_port,NO_CLUSTERS)+""));
+            logger.info("Removed node "+in_ipAddr+":"+in_port);
+
+            //e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
     public FileTable invokeSearch(String keyword,int hopCount){
         return invokeSearch(this.ipAddress,this.port,keyword,hopCount);
     }
@@ -436,143 +469,6 @@ public class Client extends Node implements services.Iface {
         return null;
     }
 
-
-//    private void processFileTableMessage(FileTableProtocol message) {
-//        FileTable receivedFileTable= message.getFileTable();
-//
-//        //check if this is the reply to JOIN
-//        TableEntry entry = new TableEntry(message.getIpAddress(),message.getPort()+"",Utils.getClusterID(message.getIpAddress(),message.getPort(),NO_CLUSTERS)+"");
-//        if(sentJoins.contains(entry) && this.getClusterID()==message.getClusterID()){
-//            sentJoins.remove(entry);
-//
-//            // if fileTable has already merged with one node in the same cluster, no need to distribute fileTable again
-//            if (sentJoins.isEmpty()){
-//                return;
-//            }
-//
-//            //send my filetable to all nodes in the same cluster
-//            if (!this.getIpTable().isEmpty()) {
-//
-//                logger.info("Distributing FileTable : " + fileTable.toString());
-//                for (Iterator<TableEntry> iterator = getIpTable().getEntries().iterator(); iterator.hasNext();) {
-//                    TableEntry tableEntry=iterator.next();
-//                    if(Integer.parseInt(tableEntry.getClusterID())==getClusterID()){
-//                        FileTableProtocol newMessage = new FileTableProtocol(getIpAddress(),getPort(),fileTable);
-//                        outBuffer.add(new DispatchMessage(newMessage.toString(),
-//                                tableEntry.getIpAddress(), Integer.parseInt(tableEntry.getPort())));
-//                        }
-//                }
-//
-//            }
-//
-//            fileTable.mergeEntriesFromTable(receivedFileTable);
-//            logger.info("File Table merged using the table sent by "+message.getIpAddress()+":"+message.getPort());
-//        }
-//
-//        else {
-//
-//            fileTable.mergeEntriesFromTable(receivedFileTable);
-//            logger.info("File Table merged using distributed table by "+message.getIpAddress()+":"+message.getPort());
-//        }
-//
-//    }
-
-
-//    private void process_IPTableMessage(IPTableProtocol message) {
-//        ((IPTableProtocol) message).mergeIPTables(getIpTable(), this.clusterID);
-//        logger.info("IP : "+getIpAddress()+" PORT : "+getPort()+
-//                " IPTABLE : "+getIpTable().toString());
-//    }
-
-
-//    private void process_JoinMessage(JoinProtocol message) {
-//        int clusterID = message.getClusterID();
-//
-//        if (clusterID == this.getClusterID()) { //check if it's in the same cluster
-//            String ipAddress = message.getIpAddress();
-//            int port = message.getPort();
-//
-//            //adds the new node to the IPTable
-//            TableEntry entry = new TableEntry(message.getIpAddress(),String.valueOf(message.getPort()),
-//                    String.valueOf(message.getClusterID()));
-//            this.getIpTable().addTableEntry(entry);
-//
-//            if (!this.getIpTable().isEmpty()) {
-//                IPTableProtocol ipMessage = new IPTableProtocol(ipAddress, port, clusterID,
-//                        getIpAddress(), getPort(), getClusterID(), getIpTable());
-//                for (Iterator<TableEntry> iterator = getIpTable().getEntries().iterator(); iterator.hasNext();) {
-//                    TableEntry tableEntry=iterator.next();
-//                    if(Integer.parseInt(tableEntry.getClusterID())==getClusterID()){
-//                        outBuffer.add(new DispatchMessage(ipMessage.toString(),
-//                                tableEntry.getIpAddress(), Integer.parseInt(tableEntry.getPort())));
-//                        logger.info("Sending IPTables ...: " + ipMessage.toString());
-//                    }
-//                }
-//
-//            }
-//
-//            sendMyFileTable(message.getIpAddress(),message.getPort());
-//            logger.info("Sending FileTable to new Node : " + message.getIpAddress()+":"+message.getPort()+"  "+fileTable.toString());
-//
-//            //If not in the same cluster
-//        } else {
-//            TableEntry entry = this.ipTable.searchClusterID(String.valueOf(clusterID));
-//
-//            if (entry == null) { //there's no entry in the IP table for this cluster
-//                entry = new TableEntry(message.getIpAddress(),String.valueOf(message.getPort()),
-//                        String.valueOf(message.getClusterID()));
-//                this.getIpTable().addTableEntry(entry);
-//
-//            } else { //there's an entry in the IP table for this cluster
-//                GroupProtocol groupMessage = new GroupProtocol(entry.getIpAddress(), Integer.parseInt(entry.getPort()));
-//                outBuffer.add(new DispatchMessage(groupMessage.toString(), ipAddress, port));
-//            }
-//        }
-//        logger.info("IP : "+getIpAddress()+" PORT : "+getPort()+
-//                " IPTABLE : "+getIpTable().toString());
-//
-//    }
-
-//    public void process_groupMessage(GroupProtocol message) {
-//        int clusterID = message.getClusterID();
-//        if (clusterID == this.getClusterID()) { //check if it's in the same cluster
-//            JoinProtocol joinMessage = new JoinProtocol(message.getClientIP(), message.getPort());
-//            outBuffer.add(new DispatchMessage(joinMessage.toString(), message.getClientIP(), message.getPort()));
-//        }
-//    }
-
-//    public void process_queryMessage(QueryProtocol message) {
-//        int hopCount = message.getNoOfHops();
-//        if(hopCount > 0) {
-//            hopCount--;
-//            List<FileTableEntry> results = searchFile(message.getKeyword());
-//            String ipAddress = message.getIpAddress();
-//            int port = message.getPort();
-//
-//            if(results != null && results.size()>0) {
-//                // generating QueryHit message
-//                QueryHitProtocol queryHitMessage = new QueryHitProtocol(ipAddress, port, results);
-//                outBuffer.add(new DispatchMessage(queryHitMessage.toString(), ipAddress, port));
-//            }
-//        } if(hopCount > 0){ // check hopCount and forward QUERY message
-//            message.setNoOfHops(hopCount);
-//            int clusterID = this.clusterID;
-//            if(!this.getIpTable().isEmpty()) {
-//                List<TableEntry> ipTable = this.ipTable.getEntries();
-//                for (TableEntry entry : ipTable) {
-//                    // send QUERY message to other clusters
-//                    // FIXME filter out the query source's cluster before forwarding
-//                    if(!entry.getClusterID().equals(clusterID)) {
-//                        outBuffer.add(new DispatchMessage(message.toString(),entry.getIpAddress(),
-//                                Integer.parseInt(entry.getPort())));
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//
-//    }
 
     public void selectProcessType(int no_nodes, String[] response_data) throws IOException {
         switch (no_nodes) {
