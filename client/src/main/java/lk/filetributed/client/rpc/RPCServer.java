@@ -1,7 +1,7 @@
 package lk.filetributed.client.rpc;
 
 
-import lk.filetributed.client.rpc.services.JoinNode;
+import lk.filetributed.client.rpc.services.services;
 import org.apache.log4j.Logger;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -33,7 +33,7 @@ public class RPCServer extends Thread{
             // Set port
             TServerSocket serverTransport = new TServerSocket(server_port);
 
-            JoinNode.Processor<JoinNode.Iface> processor = new JoinNode.Processor<JoinNode.Iface>(client);
+            services.Processor<services.Iface> processor = new services.Processor<services.Iface>(client);
 
             TServer server = new TThreadPoolServer(
                     new TThreadPoolServer.Args(serverTransport).processor(processor));

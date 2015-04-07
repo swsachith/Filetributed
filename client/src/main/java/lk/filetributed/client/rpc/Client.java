@@ -1,8 +1,8 @@
 package lk.filetributed.client.rpc;
 
 import lk.filetributed.client.BootstrapConnector;
-import lk.filetributed.client.rpc.services.JoinNode;
-import lk.filetributed.client.rpc.services.iptable;
+import lk.filetributed.client.rpc.services.messageProtocol;
+import lk.filetributed.client.rpc.services.services;
 import lk.filetributed.model.*;
 import lk.filetributed.util.Utils;
 import org.apache.log4j.Logger;
@@ -14,12 +14,20 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 
-public class Client extends Node implements JoinNode.Iface {
+public class Client extends Node implements services.Iface {
+    @Override
+    public messageProtocol mergeIPTable(String ipAddress, int port, int clusterID) throws TException {
+        return null;
+    }
+
+    @Override
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID) throws TException {
+        return null;
+    }
 
     private static Logger logger = Logger.getLogger(Client.class);
 
@@ -151,10 +159,10 @@ public class Client extends Node implements JoinNode.Iface {
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
-            JoinNode.Client client = new JoinNode.Client(protocol);
+            services.Client client = new services.Client(protocol);
 
             System.out.println("sending join request...");
-            iptable s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP, CLIENT_PORT, NO_CLUSTERS));
+            messageProtocol s = client.joinRequest(CLIENT_IP, CLIENT_PORT, Utils.getClusterID(CLIENT_IP, CLIENT_PORT, NO_CLUSTERS));
             System.out.println(s);
             transport.close();
 
@@ -166,12 +174,12 @@ public class Client extends Node implements JoinNode.Iface {
     }
 
     @Override
-    public iptable joinRequest(String ipAddress, int port, int clusterID) throws TException {
-        iptable data;
+    public messageProtocol joinRequest(String ipAddress, int port, int clusterID) throws TException {
+        messageProtocol data;
         System.out.println("join request came from "+ipAddress+" : "+port);
         System.out.println("setting iptable...");
 
-        data = new iptable();
+        data = new messageProtocol();
         data.setMyIP(ipAddress);
         data.setMyPort(port);
         data.setMyClusterID(clusterID);
