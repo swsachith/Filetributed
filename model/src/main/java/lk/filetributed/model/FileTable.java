@@ -76,4 +76,13 @@ public class FileTable {
         }
         return fileList;
     }
+
+    public void removeEntries(String ipAddress, int port){
+        for (Iterator<FileTableEntry> iterator = entries.iterator(); iterator.hasNext();) {
+            FileTableEntry entry = iterator.next();
+            if(entry.getIpAddress().equals(ipAddress) && entry.getPort() == port){
+                entries.remove(entry);
+            }
+        }
+    }
 }
