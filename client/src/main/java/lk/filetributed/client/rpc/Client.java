@@ -2,6 +2,7 @@ package lk.filetributed.client.rpc;
 
 import lk.filetributed.client.BootstrapConnector;
 import lk.filetributed.client.rpc.services.messageProtocol;
+import lk.filetributed.client.rpc.services.searchResponse;
 import lk.filetributed.client.rpc.services.services;
 import lk.filetributed.model.*;
 import lk.filetributed.util.Utils;
@@ -83,10 +84,6 @@ public class Client extends Node implements services.Iface {
         String fileListPath = properties.getProperty("FILE_LIST_PATH");
 
         FILE_NAMES= Utils.getFileList(fileListPath);
-    }
-
-    public List<FileTableEntry> searchFile(String filename) {
-        return this.fileTable.searchTable(filename);
     }
 
     public static void main(String[] args) {
@@ -276,7 +273,13 @@ public class Client extends Node implements services.Iface {
     }
 
     @Override
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID) throws TException {
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID, messageProtocol fileTable) throws TException {
+        return null;
+    }
+
+    @Override
+    public searchResponse searchFile(String fileName) throws TException {
+
         return null;
     }
 
