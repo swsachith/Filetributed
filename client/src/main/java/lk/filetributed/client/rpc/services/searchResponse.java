@@ -38,9 +38,7 @@ import org.slf4j.LoggerFactory;
 public class searchResponse implements org.apache.thrift.TBase<searchResponse, searchResponse._Fields>, java.io.Serializable, Cloneable, Comparable<searchResponse> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchResponse");
 
-  private static final org.apache.thrift.protocol.TField IP_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddress", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField CLUSTER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("clusterID", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField RESULT_FIELD_DESC = new org.apache.thrift.protocol.TField("result", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,15 +46,11 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
     schemes.put(TupleScheme.class, new searchResponseTupleSchemeFactory());
   }
 
-  public String ipAddress; // required
-  public int port; // required
-  public int clusterID; // required
+  public String result; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IP_ADDRESS((short)1, "ipAddress"),
-    PORT((short)2, "port"),
-    CLUSTER_ID((short)3, "clusterID");
+    RESULT((short)1, "result");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -71,12 +65,8 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IP_ADDRESS
-          return IP_ADDRESS;
-        case 2: // PORT
-          return PORT;
-        case 3: // CLUSTER_ID
-          return CLUSTER_ID;
+        case 1: // RESULT
+          return RESULT;
         default:
           return null;
       }
@@ -117,18 +107,11 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
   }
 
   // isset id assignments
-  private static final int __PORT_ISSET_ID = 0;
-  private static final int __CLUSTERID_ISSET_ID = 1;
-  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IP_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("ipAddress", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.RESULT, new org.apache.thrift.meta_data.FieldMetaData("result", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.CLUSTER_ID, new org.apache.thrift.meta_data.FieldMetaData("clusterID", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchResponse.class, metaDataMap);
   }
@@ -137,28 +120,19 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
   }
 
   public searchResponse(
-    String ipAddress,
-    int port,
-    int clusterID)
+    String result)
   {
     this();
-    this.ipAddress = ipAddress;
-    this.port = port;
-    setPortIsSet(true);
-    this.clusterID = clusterID;
-    setClusterIDIsSet(true);
+    this.result = result;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public searchResponse(searchResponse other) {
-    __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetIpAddress()) {
-      this.ipAddress = other.ipAddress;
+    if (other.isSetResult()) {
+      this.result = other.result;
     }
-    this.port = other.port;
-    this.clusterID = other.clusterID;
   }
 
   public searchResponse deepCopy() {
@@ -167,106 +141,40 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
 
   @Override
   public void clear() {
-    this.ipAddress = null;
-    setPortIsSet(false);
-    this.port = 0;
-    setClusterIDIsSet(false);
-    this.clusterID = 0;
+    this.result = null;
   }
 
-  public String getIpAddress() {
-    return this.ipAddress;
+  public String getResult() {
+    return this.result;
   }
 
-  public searchResponse setIpAddress(String ipAddress) {
-    this.ipAddress = ipAddress;
+  public searchResponse setResult(String result) {
+    this.result = result;
     return this;
   }
 
-  public void unsetIpAddress() {
-    this.ipAddress = null;
+  public void unsetResult() {
+    this.result = null;
   }
 
-  /** Returns true if field ipAddress is set (has been assigned a value) and false otherwise */
-  public boolean isSetIpAddress() {
-    return this.ipAddress != null;
+  /** Returns true if field result is set (has been assigned a value) and false otherwise */
+  public boolean isSetResult() {
+    return this.result != null;
   }
 
-  public void setIpAddressIsSet(boolean value) {
+  public void setResultIsSet(boolean value) {
     if (!value) {
-      this.ipAddress = null;
+      this.result = null;
     }
-  }
-
-  public int getPort() {
-    return this.port;
-  }
-
-  public searchResponse setPort(int port) {
-    this.port = port;
-    setPortIsSet(true);
-    return this;
-  }
-
-  public void unsetPort() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PORT_ISSET_ID);
-  }
-
-  /** Returns true if field port is set (has been assigned a value) and false otherwise */
-  public boolean isSetPort() {
-    return EncodingUtils.testBit(__isset_bitfield, __PORT_ISSET_ID);
-  }
-
-  public void setPortIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
-  }
-
-  public int getClusterID() {
-    return this.clusterID;
-  }
-
-  public searchResponse setClusterID(int clusterID) {
-    this.clusterID = clusterID;
-    setClusterIDIsSet(true);
-    return this;
-  }
-
-  public void unsetClusterID() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-  }
-
-  /** Returns true if field clusterID is set (has been assigned a value) and false otherwise */
-  public boolean isSetClusterID() {
-    return EncodingUtils.testBit(__isset_bitfield, __CLUSTERID_ISSET_ID);
-  }
-
-  public void setClusterIDIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CLUSTERID_ISSET_ID, value);
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IP_ADDRESS:
+    case RESULT:
       if (value == null) {
-        unsetIpAddress();
+        unsetResult();
       } else {
-        setIpAddress((String)value);
-      }
-      break;
-
-    case PORT:
-      if (value == null) {
-        unsetPort();
-      } else {
-        setPort((Integer)value);
-      }
-      break;
-
-    case CLUSTER_ID:
-      if (value == null) {
-        unsetClusterID();
-      } else {
-        setClusterID((Integer)value);
+        setResult((String)value);
       }
       break;
 
@@ -275,14 +183,8 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IP_ADDRESS:
-      return getIpAddress();
-
-    case PORT:
-      return Integer.valueOf(getPort());
-
-    case CLUSTER_ID:
-      return Integer.valueOf(getClusterID());
+    case RESULT:
+      return getResult();
 
     }
     throw new IllegalStateException();
@@ -295,12 +197,8 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
     }
 
     switch (field) {
-    case IP_ADDRESS:
-      return isSetIpAddress();
-    case PORT:
-      return isSetPort();
-    case CLUSTER_ID:
-      return isSetClusterID();
+    case RESULT:
+      return isSetResult();
     }
     throw new IllegalStateException();
   }
@@ -318,30 +216,12 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
     if (that == null)
       return false;
 
-    boolean this_present_ipAddress = true && this.isSetIpAddress();
-    boolean that_present_ipAddress = true && that.isSetIpAddress();
-    if (this_present_ipAddress || that_present_ipAddress) {
-      if (!(this_present_ipAddress && that_present_ipAddress))
+    boolean this_present_result = true && this.isSetResult();
+    boolean that_present_result = true && that.isSetResult();
+    if (this_present_result || that_present_result) {
+      if (!(this_present_result && that_present_result))
         return false;
-      if (!this.ipAddress.equals(that.ipAddress))
-        return false;
-    }
-
-    boolean this_present_port = true;
-    boolean that_present_port = true;
-    if (this_present_port || that_present_port) {
-      if (!(this_present_port && that_present_port))
-        return false;
-      if (this.port != that.port)
-        return false;
-    }
-
-    boolean this_present_clusterID = true;
-    boolean that_present_clusterID = true;
-    if (this_present_clusterID || that_present_clusterID) {
-      if (!(this_present_clusterID && that_present_clusterID))
-        return false;
-      if (this.clusterID != that.clusterID)
+      if (!this.result.equals(that.result))
         return false;
     }
 
@@ -352,20 +232,10 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
   public int hashCode() {
     List<Object> list = new ArrayList<Object>();
 
-    boolean present_ipAddress = true && (isSetIpAddress());
-    list.add(present_ipAddress);
-    if (present_ipAddress)
-      list.add(ipAddress);
-
-    boolean present_port = true;
-    list.add(present_port);
-    if (present_port)
-      list.add(port);
-
-    boolean present_clusterID = true;
-    list.add(present_clusterID);
-    if (present_clusterID)
-      list.add(clusterID);
+    boolean present_result = true && (isSetResult());
+    list.add(present_result);
+    if (present_result)
+      list.add(result);
 
     return list.hashCode();
   }
@@ -378,32 +248,12 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIpAddress()).compareTo(other.isSetIpAddress());
+    lastComparison = Boolean.valueOf(isSetResult()).compareTo(other.isSetResult());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetIpAddress()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ipAddress, other.ipAddress);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetPort()).compareTo(other.isSetPort());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetPort()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.port, other.port);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetClusterID()).compareTo(other.isSetClusterID());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetClusterID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.clusterID, other.clusterID);
+    if (isSetResult()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.result, other.result);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -428,20 +278,12 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
     StringBuilder sb = new StringBuilder("searchResponse(");
     boolean first = true;
 
-    sb.append("ipAddress:");
-    if (this.ipAddress == null) {
+    sb.append("result:");
+    if (this.result == null) {
       sb.append("null");
     } else {
-      sb.append(this.ipAddress);
+      sb.append(this.result);
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("port:");
-    sb.append(this.port);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("clusterID:");
-    sb.append(this.clusterID);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -462,8 +304,6 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (TException te) {
       throw new java.io.IOException(te);
@@ -488,26 +328,10 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
           break;
         }
         switch (schemeField.id) {
-          case 1: // IP_ADDRESS
+          case 1: // RESULT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.ipAddress = iprot.readString();
-              struct.setIpAddressIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // PORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.port = iprot.readI32();
-              struct.setPortIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // CLUSTER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.clusterID = iprot.readI32();
-              struct.setClusterIDIsSet(true);
+              struct.result = iprot.readString();
+              struct.setResultIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -527,17 +351,11 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.ipAddress != null) {
-        oprot.writeFieldBegin(IP_ADDRESS_FIELD_DESC);
-        oprot.writeString(struct.ipAddress);
+      if (struct.result != null) {
+        oprot.writeFieldBegin(RESULT_FIELD_DESC);
+        oprot.writeString(struct.result);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(PORT_FIELD_DESC);
-      oprot.writeI32(struct.port);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(CLUSTER_ID_FIELD_DESC);
-      oprot.writeI32(struct.clusterID);
-      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -556,42 +374,22 @@ public class searchResponse implements org.apache.thrift.TBase<searchResponse, s
     public void write(org.apache.thrift.protocol.TProtocol prot, searchResponse struct) throws TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetIpAddress()) {
+      if (struct.isSetResult()) {
         optionals.set(0);
       }
-      if (struct.isSetPort()) {
-        optionals.set(1);
-      }
-      if (struct.isSetClusterID()) {
-        optionals.set(2);
-      }
-      oprot.writeBitSet(optionals, 3);
-      if (struct.isSetIpAddress()) {
-        oprot.writeString(struct.ipAddress);
-      }
-      if (struct.isSetPort()) {
-        oprot.writeI32(struct.port);
-      }
-      if (struct.isSetClusterID()) {
-        oprot.writeI32(struct.clusterID);
+      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetResult()) {
+        oprot.writeString(struct.result);
       }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, searchResponse struct) throws TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.ipAddress = iprot.readString();
-        struct.setIpAddressIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.port = iprot.readI32();
-        struct.setPortIsSet(true);
-      }
-      if (incoming.get(2)) {
-        struct.clusterID = iprot.readI32();
-        struct.setClusterIDIsSet(true);
+        struct.result = iprot.readString();
+        struct.setResultIsSet(true);
       }
     }
   }

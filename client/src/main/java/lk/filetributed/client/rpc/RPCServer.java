@@ -13,7 +13,7 @@ import org.apache.thrift.transport.TTransportException;
  */
 public class RPCServer extends Thread{
 
-    private static Logger logger = Logger.getLogger(Client.class);
+    private static Logger logger = Logger.getLogger(RPCServer.class);
 
     private final int server_port;
     private Client client;
