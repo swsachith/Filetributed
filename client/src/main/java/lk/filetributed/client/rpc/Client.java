@@ -19,15 +19,6 @@ import java.util.Properties;
 
 
 public class Client extends Node implements services.Iface {
-    @Override
-    public messageProtocol mergeIPTable(String ipAddress, int port, int clusterID) throws TException {
-        return null;
-    }
-
-    @Override
-    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID) throws TException {
-        return null;
-    }
 
     private static Logger logger = Logger.getLogger(Client.class);
 
@@ -43,7 +34,7 @@ public class Client extends Node implements services.Iface {
 
 
     public Client() {
-        configClient("client/config/client1.xml");
+        configClient("client/config/client4.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -215,8 +206,23 @@ public class Client extends Node implements services.Iface {
         if(clusterID==inc_clusterID){
 
             ipTable.addTableEntry(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""));
-
             logger.info("Returning ipTable for join request form "+ inc_ipAddress + " : " + inc_port);
+
+
+            //creating messageprotocol with newly added entry
+            messageProtocol dist_ipTable;
+            dist_ipTable = new messageProtocol();
+            dist_ipTable.setMyIP(ipAddress);
+            dist_ipTable.setMyPort(port);
+            dist_ipTable.setMyClusterID(clusterID);
+            dist_ipTable.setEntries(this.getIpTable().toString());
+
+            // for each node in the same cluster send iptable to merge
+            for (TableEntry entry : this.ipTable.getEntries()){
+                if (Integer.parseInt(entry.getClusterID())==this.getClusterID() && !entry.equals(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""))){
+                    invokeMergeIPTable(entry.getIpAddress(),Integer.parseInt(entry.getPort()), dist_ipTable);
+                }
+            }
             return inc_ipTable;
         }else {
             //checking whether my iptable has ip from incoming cluster
@@ -228,7 +234,51 @@ public class Client extends Node implements services.Iface {
         return null;
 
     }
+    private void invokeMergeIPTable(String invIp, int invPort, messageProtocol dist_ipTable ){
 
+        TTransport transport;
+        try {
+            transport = new TSocket(invIp, invPort);
+            transport.open();
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            services.Client client = new services.Client(protocol);
+
+            logger.info("Sending ipTable merge request to " + invIp + " : " + invPort);
+
+            client.mergeIPTable(dist_ipTable);
+            transport.close();
+
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void mergeIPTable(messageProtocol ipTable) throws TException {
+
+        if (ipTable!=null && !ipTable.getEntries().isEmpty()){
+        IPTable ipTableToMerge = new IPTable(ipTable.getMyIP(),ipTable.getMyPort(),ipTable.myClusterID);
+            ipTableToMerge.setEntries(ipTable.entries,ipTable.myClusterID);
+
+
+            for (TableEntry entry : ipTableToMerge.getEntries()){
+                this.ipTable.addTableEntry(entry);
+            }
+        }
+
+        logger.info("Updated IPTable using table from "+ ipTable.getMyIP()+" : " + ipTable.getMyPort());
+        logger.info("Updated IPTable "+ this.ipTable.toString());
+
+
+    }
+
+    @Override
+    public messageProtocol mergeFileTable(String ipAddress, int port, int clusterID) throws TException {
+        return null;
+    }
 
 
 //    private void processFileTableMessage(FileTableProtocol message) {
