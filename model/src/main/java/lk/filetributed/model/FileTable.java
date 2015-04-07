@@ -11,6 +11,10 @@ public class FileTable {
         entries = new LinkedList<FileTableEntry>();
     }
 
+    public FileTable(LinkedList<FileTableEntry> entries){
+        this.entries = entries;
+    }
+
     public List<FileTableEntry> getEntries() {
         return entries;
     }
@@ -58,5 +62,16 @@ public class FileTable {
             entryList+=entry+";";
         }
     return entryList;
+    }
+
+    public List<FileTableEntry> toList(String entries){
+        String[] entryList = entries.split(";");
+        int numOfEntries = Integer.parseInt(entryList[1]);
+        List<FileTableEntry> fileList=new LinkedList<FileTableEntry>();
+        for (int i = 2; i < numOfEntries+2; i++){
+            String[] fileDetails = entryList[i].split(":");
+            fileList.add(new FileTableEntry(fileDetails[0],fileDetails[1],Integer.parseInt(fileDetails[2])));
+        }
+        return fileList;
     }
 }
