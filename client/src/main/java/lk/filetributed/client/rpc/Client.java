@@ -203,17 +203,17 @@ public class Client extends Node implements services.Iface {
 
         if (inc_fileTable1!=null){
             logger.info("##  received file table 1 "+ inc_fileTable1.getEntries().toString());
+            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
         }
         if (inc_fileTable2!=null){
             logger.info("##  received file table 2 "+ inc_fileTable2.getEntries().toString());
+            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
         }
 
 
         if (inc_fileTable1!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable2);
         }
-
-        logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
 
     }
 
