@@ -1,7 +1,8 @@
 package lk.filetributed.client.rpc;
 
-import lk.filetributed.client.rpc.serviceHandlers.JoinNodeHandler;
+
 import lk.filetributed.client.rpc.services.JoinNode;
+import org.apache.log4j.Logger;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -12,10 +13,14 @@ import org.apache.thrift.transport.TTransportException;
  */
 public class RPCServer extends Thread{
 
-    private final int server_port;
+    private static Logger logger = Logger.getLogger(Client.class);
 
-    public RPCServer(int server_port) {
+    private final int server_port;
+    private Client client;
+
+    public RPCServer(int server_port, Client client) {
         this.server_port = server_port;
+        this.client=client;
     }
 
     @Override
@@ -28,13 +33,12 @@ public class RPCServer extends Thread{
             // Set port
             TServerSocket serverTransport = new TServerSocket(server_port);
 
-            JoinNodeHandler handler = new JoinNodeHandler();
-            JoinNode.Processor<JoinNode.Iface> processor = new JoinNode.Processor<JoinNode.Iface>(handler);
+            JoinNode.Processor<JoinNode.Iface> processor = new JoinNode.Processor<JoinNode.Iface>(client);
 
             TServer server = new TThreadPoolServer(
                     new TThreadPoolServer.Args(serverTransport).processor(processor));
 
-            System.out.println("Starting server on port "+server_port+" ...");
+            logger.info("Starting server on port " + server_port + " ...");
             server.serve();
         } catch (TTransportException e) {
             e.printStackTrace();

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Properties;
 
 
-public class Client extends Node {
+public class Client extends Node implements JoinNode.Iface {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
@@ -33,7 +33,7 @@ public class Client extends Node {
 
 
     public Client() {
-        configClient("client/config/client1.xml");
+        configClient("client/config/client2.xml");
 
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
@@ -43,8 +43,13 @@ public class Client extends Node {
                 String.valueOf(getClusterID())));
 
 
-        Thread t_rpcServer = new Thread(new RPCServer(CLIENT_PORT));
+        Thread t_rpcServer = new Thread(new RPCServer(CLIENT_PORT,this));
         t_rpcServer.start();
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
         initFileTable(FILE_NAMES);
         initialize();
     }
@@ -112,16 +117,6 @@ public class Client extends Node {
         this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP, RECIEVED_PORT + "", clusterID + ""));
         sendJoin(receivedNode);
 
-
-
-
-        //generating the join message
-//        sendJoinMessage(RECIEVED_IP, RECIEVED_PORT);
-
-        //add dummy entry to sentJoins in order to keep track of sent joins in standard form
-        //sentJoins.add(new TableEntry("0.0.0.0","0000","0"));
-
-
     }
 
     public void process(String RECIEVED_IP_01, int RECIEVED_PORT_01, String RECIEVED_IP_02, int RECIEVED_PORT_02) {
@@ -129,20 +124,21 @@ public class Client extends Node {
         int clusterID02;
 
         clusterID01 = Utils.getClusterID(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
-        Node node01 = new Node(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
+        Node receivedNode1 = new Node(RECIEVED_IP_01, RECIEVED_PORT_01, NO_CLUSTERS);
 
-        getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_01, RECIEVED_PORT_01 + "", clusterID01 + ""));
+        this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_01, RECIEVED_PORT_01 + "", clusterID01 + ""));
 
         //generating the join message
-//        sendJoinMessage(RECIEVED_IP_01, RECIEVED_PORT_01);
+        sendJoin(receivedNode1);
+
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
-        Node node02 = new Node(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
+        Node receivedNode2 = new Node(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
 
-        getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_02, RECIEVED_PORT_02 + "", clusterID02 + ""));
+        this.getIpTable().addTableEntry(new TableEntry(RECIEVED_IP_02, RECIEVED_PORT_02 + "", clusterID02 + ""));
 
         //generating the join message
-//        sendJoinMessage(RECIEVED_IP_02, RECIEVED_PORT_02);
+        sendJoin(receivedNode2);
 
     }
 
@@ -165,6 +161,14 @@ public class Client extends Node {
         } catch (TException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String joinRequest(String ipAddress, int port, int clusterID) throws TException {
+        System.out.println("join request came from "+ipAddress+" : "+port);
+        System.out.println("setting iptable...");
+
+        return "success yakoo";
     }
 
 //    public void processBuffer() {
