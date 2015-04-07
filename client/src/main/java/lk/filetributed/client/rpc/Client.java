@@ -369,8 +369,9 @@ public class Client extends Node implements services.Iface {
     public searchResponse searchFile(String keyword, int hopCount) throws TException {
 
         if (hopCount<=0){
-            return null;
+            return new searchResponse(" ");
         }
+        logger.info("search for " + keyword + " hop count "+hopCount);
         String result = "";
         List<FileTableEntry> resultEntries;
 
@@ -382,22 +383,23 @@ public class Client extends Node implements services.Iface {
             }
             return new searchResponse(result);
         }else {
-
+            logger.info("search for " + keyword+" not in my cluster");
             for (TableEntry entry : this.ipTable.getEntries()){
                 if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
                     invokeSearch(entry.getIpAddress(),Integer.parseInt(entry.getPort()),keyword,hopCount-1);
+                    logger.info("search for " + keyword + "invoked search in "+entry.getIpAddress()+" : " +entry.getPort());
                 }
             }
         }
 
-        return null;
+        return new searchResponse(" ");
     }
 
-    synchronized public FileTable invokeSearch(String keyword,int hopCount){
+    public FileTable invokeSearch(String keyword,int hopCount){
         return invokeSearch(this.ipAddress,this.port,keyword,hopCount);
     }
 
-    synchronized private FileTable invokeSearch(String in_ipAddr, int in_port, String keyword,int hopCount) {
+    private FileTable invokeSearch(String in_ipAddr, int in_port, String keyword,int hopCount) {
 
         TTransport transport;
         try {
@@ -407,7 +409,7 @@ public class Client extends Node implements services.Iface {
             TProtocol protocol = new TBinaryProtocol(transport);
             services.Client client = new services.Client(protocol);
 
-            logger.info("invoke search on " + in_ipAddr + " : " + in_port);
+            logger.info("invoking search on " + in_ipAddr + " : " + in_port);
 
             searchResponse searchResponse = client.searchFile(keyword, hopCount);
             transport.close();
