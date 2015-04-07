@@ -446,6 +446,9 @@ public class Client extends Node implements services.Iface {
             this.ipTable.removeTableEntry(new TableEntry(in_ipAddr,in_port+"",Utils.getClusterID(in_ipAddr, in_port,NO_CLUSTERS)+""));
             logger.info("Removed node "+in_ipAddr+":"+in_port);
 
+            this.fileTable.removeEntries(in_ipAddr, in_port);
+            logger.info("Updated file table after removing node "+in_ipAddr+":"+in_port+" : "+this.fileTable.toString());
+
             //e.printStackTrace();
         } catch (TException e) {
             e.printStackTrace();
