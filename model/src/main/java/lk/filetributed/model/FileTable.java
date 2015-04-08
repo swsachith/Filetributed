@@ -82,7 +82,6 @@ public class FileTable {
     }
 
     public void removeEntries(String ipAddress, int port){
-        logger.info("$ remove invoked "+ipAddress+" : "+port+ " : "+this.toString());
         FileTableEntry[] entryArray = new FileTableEntry[this.getEntries().size()];
         int i=0;
         for(FileTableEntry entry: this.getEntries()){
@@ -91,11 +90,11 @@ public class FileTable {
         }
 
         for(FileTableEntry entry: entryArray){
-            logger.info("$$ entry "+ipAddress+" : "+port+" : "+entry.toString());
+
             if (entry.getIpAddress().equals(ipAddress) && entry.getPort() == port) {
                 entries.remove(entry);
+                logger.info("Entry removed from file table "+ipAddress+" : "+port+" : "+entry.toString());
             }
-            logger.info("$$$ entry "+ipAddress+" : "+port+" : "+this.toString());
         }
     }
 }
