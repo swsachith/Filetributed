@@ -1,12 +1,16 @@
 package lk.filetributed.model;
 
+import org.apache.log4j.Logger;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
 
 public class FileTable {
     List<FileTableEntry> entries;
-
+    private static Logger logger = Logger.getLogger(FileTable.class);
     public FileTable() {
         entries = new LinkedList<FileTableEntry>();
     }
@@ -78,11 +82,20 @@ public class FileTable {
     }
 
     public void removeEntries(String ipAddress, int port){
-        for (Iterator<FileTableEntry> iterator = entries.iterator(); iterator.hasNext();) {
-            FileTableEntry entry = iterator.next();
-            if(entry.getIpAddress().equals(ipAddress) && entry.getPort() == port){
+        logger.info("$ remove invoked "+ipAddress+" : "+port+ " : "+this.toString());
+        FileTableEntry[] entryArray = new FileTableEntry[this.getEntries().size()];
+        int i=0;
+        for(FileTableEntry entry: this.getEntries()){
+            entryArray[i] = entry;
+            i++;
+        }
+
+        for(FileTableEntry entry: entryArray){
+            logger.info("$$ entry "+ipAddress+" : "+port+" : "+entry.toString());
+            if (entry.getIpAddress().equals(ipAddress) && entry.getPort() == port) {
                 entries.remove(entry);
             }
+            logger.info("$$$ entry "+ipAddress+" : "+port+" : "+this.toString());
         }
     }
 }

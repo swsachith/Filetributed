@@ -25,7 +25,7 @@ public class Client extends Node implements services.Iface {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "127.0.0.1";
+    private static final String SERVER_NAME = "192.168.43.167";
     private static final int PORT = 9889;
 
     private static String CLIENT_IP;
@@ -38,7 +38,6 @@ public class Client extends Node implements services.Iface {
 
     public Client() {
         configClient("client/config/client3.xml");
-
         super.ipAddress = CLIENT_IP;
         super.port=CLIENT_PORT;
         super.NO_CLUSTERS=NO_CLUSTERS;
@@ -408,7 +407,7 @@ public class Client extends Node implements services.Iface {
             logger.info("File " + keyword+" not in my cluster");
             for (TableEntry entry : this.ipTable.getEntries()){
                 if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
-                    logger.info("search for " + keyword + ": invoking search in cluster : "+Utils.getClusterID(entry.getIpAddress(),Integer.parseInt(entry.getPort()),NO_CLUSTERS)+entry.getIpAddress()+" : " +entry.getPort());
+                    logger.info("search for " + keyword + ": invoking search in cluster : " + Utils.getClusterID(entry.getIpAddress(), Integer.parseInt(entry.getPort()), NO_CLUSTERS) + entry.getIpAddress() + " : " + entry.getPort());
                     FileTable fileTable1 = invokeSearch(entry.getIpAddress(), Integer.parseInt(entry.getPort()), keyword, hopCount - 1);
                     result="";
                     for (FileTableEntry entry2 : fileTable1.getEntries()){
@@ -443,10 +442,12 @@ public class Client extends Node implements services.Iface {
 
         } catch (TTransportException e) {
             logger.info("HeartBeat not returned...");
-            this.ipTable.removeTableEntry(new TableEntry(in_ipAddr,in_port+"",Utils.getClusterID(in_ipAddr, in_port,NO_CLUSTERS)+""));
+            this.ipTable.removeTableEntry(new TableEntry(in_ipAddr, in_port + "", Utils.getClusterID(in_ipAddr, in_port, NO_CLUSTERS) + ""));
             logger.info("Removed node "+in_ipAddr+":"+in_port);
 
+
             this.fileTable.removeEntries(in_ipAddr, in_port);
+
             logger.info("Updated file table after removing node "+in_ipAddr+":"+in_port+" : "+this.fileTable.toString());
 
             //e.printStackTrace();
@@ -526,6 +527,8 @@ public class Client extends Node implements services.Iface {
     }
 
     public void leaveInvoked() {
+        String result = BootstrapConnector.disconnectFromBootstrap(SERVER_NAME, PORT, CLIENT_IP, CLIENT_PORT, USERNAME);
+        System.out.println(result);
         System.exit(0);
     }
 }

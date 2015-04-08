@@ -3,6 +3,7 @@ package lk.filetributed.model.protocols;
 import lk.filetributed.model.FileTable;
 import lk.filetributed.model.FileTableEntry;
 import lk.filetributed.util.Utils;
+import org.apache.log4j.Logger;
 
 public class FileTableProtocol extends MessageProtocol {
 

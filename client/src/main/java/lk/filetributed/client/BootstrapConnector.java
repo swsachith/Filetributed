@@ -50,4 +50,45 @@ public class BootstrapConnector {
         }
         return null;
     }
+
+
+    public static String disconnectFromBootstrap(final String SERVER_NAME, final int PORT, final String CLIENT_IP,
+                                            final int CLIENT_PORT, final String USERNAME){
+        Socket client = null;
+        try {
+            String UNREGISTER_MSG = "UNREG " + CLIENT_IP + " " + CLIENT_PORT+ " " + USERNAME;
+
+            //setting the length
+            String length = String.format("%04d", UNREGISTER_MSG.length()+5);
+            UNREGISTER_MSG = length + " " + UNREGISTER_MSG;
+
+            logger.info("Disconnecting from " + SERVER_NAME
+                    + " on port " + PORT);
+            client = new Socket(SERVER_NAME, PORT);
+            logger.info("Just disconnected from "
+                    + client.getRemoteSocketAddress());
+            logger.info("UNREG message sent to Bootrstrap : " + UNREGISTER_MSG);
+            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+            out.print(UNREGISTER_MSG);
+            out.flush();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(client.getInputStream()));
+            String result = in.readLine();
+            logger.info("UNREG Response from Bootrstrap recieved: " + result);
+            return result;
+
+
+        } catch (IOException e) {
+            logger.error("Error in connecting to the Bootstrap Server ... "+ e.getStackTrace());
+        }finally {
+            if(client != null && !client.isClosed())
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    logger.error("Error occured in closing the connection with the Bootsrap server .."+e.getMessage());
+                }
+        }
+        return null;
+    }
 }
