@@ -7,14 +7,14 @@ import java.util.Set;
 
 public class Node {
 
-    protected int NO_CLUSTERS;
-    protected String ipAddress;
-    protected int port;
-    protected String username;
-    protected int clusterID;
-    protected IPTable ipTable;
-    protected FileTable fileTable;
-    protected Set<TableEntry> sentJoins;
+    public int NO_CLUSTERS;
+    public String ipAddress;
+    public int port;
+    public String username;
+    public int clusterID;
+    public IPTable ipTable;
+    public FileTable fileTable;
+    public Set<TableEntry> sentJoins;
 
     public Node(String ipAddress, int port,int clusters) {
         sentJoins= new HashSet<TableEntry>();
