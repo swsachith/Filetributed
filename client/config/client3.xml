@@ -3,7 +3,7 @@
 <properties>
     <comment>Client details</comment>
     <entry key="CLIENT_IP">127.0.0.1</entry>
-    <entry key="CLIENT_PORT">9884</entry>
+    <entry key="CLIENT_PORT">9883</entry>
     <entry key="USERNAME">sachith</entry>
     <entry key="NO_CLUSTERS">3</entry>
 

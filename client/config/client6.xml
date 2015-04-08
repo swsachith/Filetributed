@@ -3,10 +3,10 @@
 <properties>
     <comment>Client details</comment>
     <entry key="CLIENT_IP">127.0.0.1</entry>
-    <entry key="CLIENT_PORT">9882</entry>
-    <entry key="USERNAME">dammina</entry>
+    <entry key="CLIENT_PORT">9886</entry>
+    <entry key="USERNAME">vidudaya</entry>
     <entry key="NO_CLUSTERS">3</entry>
 
-    <entry key="FILE_LIST_PATH">client/config/fileList2.txt</entry>
+    <entry key="FILE_LIST_PATH">client/config/fileList6.txt</entry>
 
 </properties>
