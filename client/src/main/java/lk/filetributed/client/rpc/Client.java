@@ -46,7 +46,6 @@ public class Client extends Node implements services.Iface {
         super.port=CLIENT_PORT;
         super.NO_CLUSTERS=NO_CLUSTERS;
         super.setCluster();
-        logger.info("Cluster id : "+clusterID);
         debugServerLog("initiated Cluster ID : "+clusterID);
         super.ipTable.setSelf(new TableEntry(CLIENT_IP, String.valueOf(CLIENT_PORT),
                 String.valueOf(getClusterID())));
@@ -103,7 +102,7 @@ public class Client extends Node implements services.Iface {
         if (args.length>=1) {
             Client client = new Client(args[0]);
         }else {
-            Client client = new Client("client1.xml");
+            Client client = new Client("client3.xml");
         }
     }
 
@@ -312,7 +311,7 @@ public class Client extends Node implements services.Iface {
             TProtocol protocol = new TBinaryProtocol(transport);
             log_services.Client client = new log_services.Client(protocol);
 
-            client.infoLog(username.toUpperCase()+" "+this.getIpAddress()+":"+this.getPort()+"  "+log);
+            client.infoLog(USERNAME.toUpperCase()+" "+this.getIpAddress()+":"+this.getPort()+"  "+log);
             transport.close();
 
 
