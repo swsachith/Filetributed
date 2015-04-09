@@ -1,6 +1,7 @@
 package lk.filetributed.client.rpc;
 
 import lk.filetributed.client.BootstrapConnector;
+import lk.filetributed.client.rpc.services.log_services;
 import lk.filetributed.client.rpc.services.messageProtocol;
 import lk.filetributed.client.rpc.services.searchResponse;
 import lk.filetributed.client.rpc.services.services;
@@ -32,6 +33,8 @@ public class Client extends Node implements services.Iface {
     private static int CLIENT_PORT;
     private static String USERNAME;
     private static int NO_CLUSTERS;
+    private static String DEBUG_IP="127.0.0.1";
+    private static int DEBUG_PORT=9000;
 
     private static String[] FILE_NAMES;
 
@@ -44,6 +47,7 @@ public class Client extends Node implements services.Iface {
         super.NO_CLUSTERS=NO_CLUSTERS;
         super.setCluster();
         logger.info("Cluster id : "+clusterID);
+        debugServerLog("initiated Cluster ID : "+clusterID);
         super.ipTable.setSelf(new TableEntry(CLIENT_IP, String.valueOf(CLIENT_PORT),
                 String.valueOf(getClusterID())));
 
@@ -138,8 +142,11 @@ public class Client extends Node implements services.Iface {
         logger.info("#  my file table "+ this.fileTable.getEntries().toString());
         if (inc_fileTable!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable);
-            logger.info("##  received file table "+ inc_fileTable.getEntries().toString());
-            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
+            logger.info("##  received file table " + inc_fileTable.getEntries().toString());
+            debugServerLog("##  received file table " + inc_fileTable.getEntries().toString());
+            logger.info("###  merged file table " + this.fileTable.getEntries().toString());
+            debugServerLog("###  merged file table " + this.fileTable.getEntries().toString());
+
         }
 
         Node NodeToMergeFileTables;
@@ -151,8 +158,10 @@ public class Client extends Node implements services.Iface {
                 logger.info("#  my file table "+ this.fileTable.getEntries().toString());
                 if (fileTable!=null){
                     this.fileTable.mergeEntriesFromTable(inc_fileTable);
-                    logger.info("##  received file table "+ fileTable.getEntries().toString());
-                    logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
+                    logger.info("##  received file table " + fileTable.getEntries().toString());
+                    debugServerLog("##  received file table " + fileTable.getEntries().toString());
+                    logger.info("###  merged file table " + this.fileTable.getEntries().toString());
+                    debugServerLog("###  merged file table " + this.fileTable.getEntries().toString());
                 }
             }
 
@@ -182,7 +191,8 @@ public class Client extends Node implements services.Iface {
         logger.info("#  my file table "+ this.fileTable.getEntries().toString());
         if (inc_fileTable1!=null){
             this.fileTable.mergeEntriesFromTable(inc_fileTable1);
-            logger.info("##  received iptable 1"+ inc_ipTable1.getEntries().toString());
+            logger.info("##  received iptable 1" + inc_ipTable1.getEntries().toString());
+            debugServerLog("##  received iptable 1" + inc_ipTable1.getEntries().toString());
         }
 
         clusterID02 = Utils.getClusterID(RECIEVED_IP_02, RECIEVED_PORT_02, NO_CLUSTERS);
@@ -198,6 +208,7 @@ public class Client extends Node implements services.Iface {
                 this.ipTable.addTableEntry(entry);
             }
             logger.info("##  received iptable 2"+ inc_ipTable2.getEntries().toString());
+            debugServerLog("##  received iptable 2" + inc_ipTable2.getEntries().toString());
         }
 
 
@@ -207,11 +218,15 @@ public class Client extends Node implements services.Iface {
 
         if (inc_fileTable1!=null){
             logger.info("##  received file table 1 "+ inc_fileTable1.getEntries().toString());
-            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
+            debugServerLog("##  received file table 1 " + inc_fileTable1.getEntries().toString());
+            logger.info("###  merged file table " + this.fileTable.getEntries().toString());
+            debugServerLog("###  merged file table " + this.fileTable.getEntries().toString());
         }
         if (inc_fileTable2!=null){
             logger.info("##  received file table 2 "+ inc_fileTable2.getEntries().toString());
-            logger.info("###  merged file table "+ this.fileTable.getEntries().toString());
+            debugServerLog("##  received file table 2 " + inc_fileTable2.getEntries().toString());
+            logger.info("###  merged file table " + this.fileTable.getEntries().toString());
+            debugServerLog("###  merged file table " + this.fileTable.getEntries().toString());
         }
 
 
@@ -231,6 +246,7 @@ public class Client extends Node implements services.Iface {
             services.Client client = new services.Client(protocol);
 
             logger.info("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
+            debugServerLog("Sending join request to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
             messageProtocol recvd_ipTable = client.joinRequest(CLIENT_IP, CLIENT_PORT);
             transport.close();
 
@@ -261,6 +277,7 @@ public class Client extends Node implements services.Iface {
             services.Client client = new services.Client(protocol);
 
             logger.info("Sending file table to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
+            debugServerLog("Sending file table to " + receivedNode.getIpAddress() + " : " + receivedNode.getPort());
 
             messageProtocol recvd_fileTable = client.mergeFileTable(CLIENT_IP, CLIENT_PORT, this.getFileTable().toString());
             transport.close();
@@ -284,6 +301,28 @@ public class Client extends Node implements services.Iface {
         }
         return null;
     }
+
+    synchronized void debugServerLog(String log){
+        TTransport transport;
+        try {
+            transport = new TSocket(DEBUG_IP, DEBUG_PORT);
+            transport.open();
+
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            log_services.Client client = new log_services.Client(protocol);
+
+            client.infoLog(username.toUpperCase()+" "+this.getIpAddress()+":"+this.getPort()+"  "+log);
+            transport.close();
+
+
+        } catch (TTransportException e) {
+            logger.info("Debug server not found...");
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
     @Override
     public messageProtocol mergeFileTable(String inc_ipAddress, int inc_port, String inc_fileTableEntries) throws TException {
         messageProtocol inc_fileTable;
@@ -294,10 +333,13 @@ public class Client extends Node implements services.Iface {
         if(clusterID == inc_clusterID)
         {
             logger.info("Incoming file table from " + inc_ipAddress + " : " + inc_port+" : "+inc_fileTableEntries);
+            debugServerLog("Incoming file table from " + inc_ipAddress + " : " + inc_port + " : " + inc_fileTableEntries);
             List<FileTableEntry> inc_fileEntryList = this.getFileTable().toList(inc_fileTableEntries);
             this.getFileTable().mergeEntriesFromTable(new FileTable((java.util.LinkedList<FileTableEntry>) inc_fileEntryList));
-            logger.info("File table from " + inc_ipAddress + " : " + inc_port+" merged with "+this.getIpAddress()+" : "+this.getPort());
-            logger.info("Merged table : " +this.getFileTable().toString());
+            logger.info("File table from " + inc_ipAddress + " : " + inc_port + " merged with " + this.getIpAddress() + " : " + this.getPort());
+            debugServerLog("File table from " + inc_ipAddress + " : " + inc_port + " merged with " + this.getIpAddress() + " : " + this.getPort());
+            logger.info("Merged table : " + this.getFileTable().toString());
+            debugServerLog("Merged table : " + this.getFileTable().toString());
 
             inc_fileTable = new messageProtocol(ipAddress, port, existingTableEntries);
 
@@ -312,6 +354,7 @@ public class Client extends Node implements services.Iface {
         int inc_clusterID=Utils.getClusterID(inc_ipAddress,inc_port,this.NO_CLUSTERS);
         messageProtocol inc_ipTable;
         logger.info("Incoming join request from " + inc_ipAddress + " : " + inc_port);
+        debugServerLog("Incoming join request from " + inc_ipAddress + " : " + inc_port);
 
         inc_ipTable = new messageProtocol();
         inc_ipTable.setMyIP(ipAddress);
@@ -322,7 +365,8 @@ public class Client extends Node implements services.Iface {
         if(clusterID==inc_clusterID){
 
             ipTable.addTableEntry(new TableEntry(inc_ipAddress,inc_port+"",inc_clusterID+""));
-            logger.info("Returning ipTable for join request form "+ inc_ipAddress + " : " + inc_port);
+            logger.info("Returning ipTable for join request form " + inc_ipAddress + " : " + inc_port);
+            debugServerLog("Returning ipTable for join request form " + inc_ipAddress + " : " + inc_port);
 
 
             //creating messageprotocol with newly added entry
@@ -360,6 +404,7 @@ public class Client extends Node implements services.Iface {
             services.Client client = new services.Client(protocol);
 
             logger.info("Sending ipTable merge request to " + invIp + " : " + invPort);
+            debugServerLog("Sending ipTable merge request to " + invIp + " : " + invPort);
 
             client.mergeIPTable(dist_ipTable);
             transport.close();
@@ -386,7 +431,9 @@ public class Client extends Node implements services.Iface {
         }
 
         logger.info("Updated IPTable using table from "+ ipTable.getMyIP()+" : " + ipTable.getMyPort());
-        logger.info("Updated IPTable "+ this.ipTable.toString());
+        debugServerLog("Updated IPTable using table from " + ipTable.getMyIP() + " : " + ipTable.getMyPort());
+        logger.info("Updated IPTable " + this.ipTable.toString());
+        debugServerLog("Updated IPTable " + this.ipTable.toString());
 
 
     }
@@ -398,6 +445,7 @@ public class Client extends Node implements services.Iface {
             return new searchResponse(" ");
         }
         logger.info("search for " + keyword + " hop count "+hopCount);
+        debugServerLog("search for " + keyword + " hop count " + hopCount);
         String result = "";
         List<FileTableEntry> resultEntries;
 
@@ -410,9 +458,11 @@ public class Client extends Node implements services.Iface {
             return new searchResponse(result);
         }else {
             logger.info("File " + keyword+" not in my cluster");
+            debugServerLog("File " + keyword + " not in my cluster");
             for (TableEntry entry : this.ipTable.getEntries()){
                 if (Integer.parseInt(entry.getClusterID())!=this.clusterID){
                     logger.info("search for " + keyword + ": invoking search in cluster : "+Utils.getClusterID(entry.getIpAddress(),Integer.parseInt(entry.getPort()),NO_CLUSTERS)+entry.getIpAddress()+" : " +entry.getPort());
+                    debugServerLog("search for " + keyword + ": invoking search in cluster : " + Utils.getClusterID(entry.getIpAddress(), Integer.parseInt(entry.getPort()), NO_CLUSTERS) + entry.getIpAddress() + " : " + entry.getPort());
                     FileTable fileTable1 = invokeSearch(entry.getIpAddress(), Integer.parseInt(entry.getPort()), keyword, hopCount - 1);
 
                     if (fileTable1!=null) {
@@ -450,13 +500,16 @@ public class Client extends Node implements services.Iface {
 
         } catch (TTransportException e) {
             logger.info("HeartBeat not returned...");
+            debugServerLog("HeartBeat not returned...");
             this.ipTable.removeTableEntry(new TableEntry(in_ipAddr, in_port + "", Utils.getClusterID(in_ipAddr, in_port, NO_CLUSTERS) + ""));
-            logger.info("Removed node "+in_ipAddr+":"+in_port);
+            logger.info("Removed node " + in_ipAddr + ":" + in_port);
+            debugServerLog("Removed node " + in_ipAddr + ":" + in_port);
 
 
             this.fileTable.removeEntries(in_ipAddr, in_port);
 
             logger.info("Updated file table after removing node "+in_ipAddr+":"+in_port+" : "+this.fileTable.toString());
+            debugServerLog("Updated file table after removing node " + in_ipAddr + ":" + in_port + " : " + this.fileTable.toString());
 
             //e.printStackTrace();
         } catch (TException e) {
@@ -479,6 +532,7 @@ public class Client extends Node implements services.Iface {
             services.Client client = new services.Client(protocol);
 
             logger.info("invoking search on " + in_ipAddr + " : " + in_port);
+            debugServerLog("invoking search on " + in_ipAddr + " : " + in_port);
 
             searchResponse searchResponse = client.searchFile(keyword, hopCount);
             transport.close();
