@@ -574,6 +574,7 @@ public class Client extends Node implements services.Iface {
 
 
     public void selectProcessType(int no_nodes, String[] response_data) throws IOException {
+        String [] selectedPeers;
         switch (no_nodes) {
             case 0:
                 process();
@@ -590,7 +591,8 @@ public class Client extends Node implements services.Iface {
             case 8:
             case 9:
             case 10:
-                process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
+                selectedPeers = selectPeersToJoin(response_data);
+                process(selectedPeers[0], Integer.parseInt(selectedPeers[1]), selectedPeers[2], Integer.parseInt(selectedPeers[3]));
                 break;
             case 9999:
                 System.out.println("failed, there is some error in the command");
@@ -605,6 +607,27 @@ public class Client extends Node implements services.Iface {
                 System.out.println("failed, can’t register. BS full.");
                 break;
         }
+    }
+
+    private String [] selectPeersToJoin(String [] responseData){
+        String [] selectedPeeers = new String[4];
+        boolean gotSameCluster = false;
+        selectedPeeers[0] = responseData[3];
+        selectedPeeers[1] = responseData[4];
+        for (int i = 6; i < responseData.length-1;) {
+            if(Utils.getClusterID(responseData[i],Integer.parseInt(responseData[i+1]),NO_CLUSTERS)==this.clusterID){
+                selectedPeeers[2] = responseData[i];
+                selectedPeeers[3] = responseData[i+1];
+                gotSameCluster=true;
+                break;
+            }
+            i+=3;
+        }
+        if(!gotSameCluster){
+            selectedPeeers[2] = responseData[6];
+            selectedPeeers[3] = responseData[7];
+        }
+        return selectedPeeers;
     }
 
     public void leaveInvoked() {
