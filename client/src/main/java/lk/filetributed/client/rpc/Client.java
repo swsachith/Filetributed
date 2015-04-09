@@ -26,20 +26,21 @@ public class Client extends Node implements services.Iface {
 
     private static Logger logger = Logger.getLogger(Client.class);
 
-    private static final String SERVER_NAME = "127.0.0.1";
-    private static final int PORT = 9889;
+    private static String SERVER_NAME;
+    private static int PORT;
 
     private static String CLIENT_IP;
     private static int CLIENT_PORT;
     private static String USERNAME;
     private static int NO_CLUSTERS;
-    private static String DEBUG_IP="127.0.0.1";
-    private static int DEBUG_PORT=9000;
+    private static String DEBUG_IP;
+    private static int DEBUG_PORT;
 
     private static String[] FILE_NAMES;
 
 
     public Client(String arg) {
+        configServer("client/config/server.xml");
         configClient("client/config/"+arg);
 
         super.ipAddress = CLIENT_IP;
@@ -68,11 +69,24 @@ public class Client extends Node implements services.Iface {
         t_heartbeatThread.start();
     }
 
+    private void configServer(String configFileLocation) {
+        Properties properties = Utils.loadPropertyFile(configFileLocation);
+
+        SERVER_NAME=properties.getProperty("SERVER_NAME");
+        PORT=Integer.parseInt(properties.getProperty("PORT"));
+
+        DEBUG_IP=properties.getProperty("DEBUG_IP");
+        DEBUG_PORT=Integer.parseInt(properties.getProperty("DEBUG_PORT"));
+
+    }
+
     //connect with the system
     public void initialize() {
         String result = BootstrapConnector.connectToBootstrap(SERVER_NAME, PORT, CLIENT_IP, CLIENT_PORT, USERNAME);
+        debugServerLog("REG message sent to Bootrstrap");
         try {
             response_tokenizer(result);
+            debugServerLog(result);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -589,7 +603,9 @@ public class Client extends Node implements services.Iface {
 
     public void leaveInvoked() {
         String result = BootstrapConnector.disconnectFromBootstrap(SERVER_NAME, PORT, CLIENT_IP, CLIENT_PORT, USERNAME);
-        System.out.println(result);
+        debugServerLog("UNREG message sent to Bootrstrap");
+        logger.info(result);
+        debugServerLog(result);
         System.exit(0);
     }
 }

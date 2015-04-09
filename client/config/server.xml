@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>Server details</comment>
+    <entry key="SERVER_NAME">127.0.0.1</entry>
+    <entry key="PORT">9889</entry>
+
+    <entry key="DEBUG_IP">127.0.0.1</entry>
+    <entry key="DEBUG_PORT">9000</entry>
+
+
+</properties>
