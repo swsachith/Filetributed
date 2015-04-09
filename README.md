@@ -12,6 +12,6 @@ Step 2<br />
 
 Step 3<br />
  1. on a different terminal, go to project root.<br />
- 2. execute shell script using the command $ sh run.sh<br />
+ 2. execute shell script using the command "$ sh run.sh 3" (use the number of nodes you want to run, upto 10)<br />
 
 
