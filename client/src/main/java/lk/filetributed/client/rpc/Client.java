@@ -116,7 +116,7 @@ public class Client extends Node implements services.Iface {
         if (args.length>=1) {
             Client client = new Client(args[0]);
         }else {
-            Client client = new Client("client3.xml");
+            Client client = new Client("client10.xml");
         }
     }
 
@@ -584,6 +584,12 @@ public class Client extends Node implements services.Iface {
             case 2:
             case 3:
             case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
                 process(response_data[3], Integer.parseInt(response_data[4]), response_data[6], Integer.parseInt(response_data[7]));
                 break;
             case 9999:
